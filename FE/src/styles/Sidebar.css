@@ -1,0 +1,67 @@
+#SIDEBAR {
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-main);
+}
+
+nav {
+  width: 100%;
+  height: 100%;
+}
+
+ul {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+}
+
+ul li {
+  width: 100%;
+}
+
+.router-link {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 5px 5px 5px 20px;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--color-main);
+}
+
+.router-link.active-router-link {
+  border-radius: 0 20px 20px 0;
+  background: rgb(223, 110, 242);
+  background: linear-gradient(
+    90deg,
+    rgba(223, 110, 242, 1) 42%,
+    rgba(175, 95, 196, 1) 67%,
+    rgba(115, 72, 120, 0.9023984593837535) 100%
+  );
+}
+
+.router-link:hover {
+  border-radius: 0 20px 20px 0;
+  background: rgb(223, 110, 242);
+  background: linear-gradient(
+    90deg,
+    rgba(223, 110, 242, 1) 42%,
+    rgba(175, 95, 196, 1) 67%,
+    rgba(115, 72, 120, 0.9023984593837535) 100%
+  );
+}
+
+.router-link img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.router-link span {
+  font-size: 15px;
+  font-weight: 300;
+}

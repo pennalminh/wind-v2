@@ -1,0 +1,59 @@
+.div-img-icon-32px {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-icon-default {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.btn-text-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px dashed #ccc;
+  border-radius: 5px;
+  padding: 5px 12px;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-text-default img {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-text-default span {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 300;
+}
+
+.btn-text-default:hover {
+  cursor: pointer;
+  border: 0.5px solid #fff;
+}
+
+.btn-icon-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.btn-icon-default img {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-icon-default:hover {
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: var(--background-main);
+}
