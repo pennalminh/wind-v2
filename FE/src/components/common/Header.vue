@@ -7,6 +7,11 @@
       </div>
     </div>
     <div class="nav-header">
+      <div class="div-left">
+        <div class="btn-toggle-sidbar" @click="toggleSidebarFunction">
+          <img :src="MenuBarIcon" alt="">
+        </div>
+      </div>
       <ul>
         <li title="Cài đặt">
           <img :src="SettingIcon" alt="settings icon" />
@@ -23,6 +28,15 @@
 import Logo from './../../assets/images/logo.jpg'
 import UserIcon from './../../assets/icons/24px/avatar.png'
 import SettingIcon from './../../assets/icons/24px/settings.png'
+import MenuBarIcon from './../../assets/icons/24px/menu-bar.png'
+
+const emits = defineEmits([
+  'toggleSidebar'
+])
+
+const toggleSidebarFunction = () => {
+  emits('toggleSidebar')
+}
 </script>
 
 <style scoped>

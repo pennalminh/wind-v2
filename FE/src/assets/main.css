@@ -10,20 +10,24 @@
   width: 100%;
   height: var(--header-height);
   background-color: #fff;
+  transition: all .5s ease;
 }
 
 #MAIN-VIEW-APP {
   width: 100%;
   height: calc(100% - var(--header-height));
   display: flex;
+  transition: all .5s ease;
 }
 
 .sidebar-main-app {
   width: var(--sidebar-width);
   height: 100%;
+  transition: all .5s ease;
 }
 
 .main-view-app {
   width: calc(100% - var(--sidebar-width));
   height: 100%;
+  transition: all .5s ease;
 }
