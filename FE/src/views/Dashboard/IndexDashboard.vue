@@ -29,8 +29,22 @@
       </div>
       <div class="chart-main">
         <div class="header-chart">
-          <div class="btn-icon-default" title="Phóng to">
-            <img :src="IconFull" alt="" />
+          <div class="left-header-chart">
+            <div class="filter-date">
+              <div class="input-date">
+                <label for="">Từ :</label>
+                <input type="date" />
+              </div>
+              <div class="input-date">
+                <label for="">Đến: </label>
+                <input type="date" />
+                </div>
+            </div>
+          </div>
+          <div class="right-header-chart">
+            <div class="btn-icon-default" title="Phóng to">
+              <img :src="IconFull" alt="" />
+            </div>
           </div>
         </div>
         <hr />
