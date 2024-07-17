@@ -2,7 +2,7 @@
   <section id="MAIN-INDEX-DASHBOARD">
     <div class="main-dashboard">
       <div class="breadcrumb-dashboard">
-        <div class="">
+        <div style="display: flex; justify-content: center; color: aliceblue">
           <h1>BIỂU ĐỒ</h1>
         </div>
       </div>

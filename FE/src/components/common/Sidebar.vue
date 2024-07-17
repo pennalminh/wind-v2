@@ -32,14 +32,14 @@ import { onMounted, ref } from 'vue'
 const navMenu = ref([
   {
     id: '#dashboard',
-    name: 'Dashboard',
+    name: 'Biểu đồ',
     icon: DashboardIcon,
     link: '/',
     status: 'active'
   },
   {
     id: '#report',
-    name: 'Report',
+    name: 'Báo cáo',
     icon: ReportIcon,
     link: '/report',
     status: 'none'
