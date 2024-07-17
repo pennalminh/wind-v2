@@ -26,17 +26,44 @@ const writeDataWindyEvery3h = async () => {
     const wind_v = response.data["wind_v-surface"][1];
     const windSpeed = caculatorWindSpeed(wind_u, wind_v);
 
-    const point = new Point(influxMeasurementWindAPI)
-      .tag("wind", "val")
-      .floatField("value", windSpeed);
+    const point = new Point(influxMeasurementWindAPI).floatField(
+      "value",
+      windSpeed
+    );
 
     writeApi.writePoint(point);
 
     await writeApi.flush();
     console.log("WRITE FINISHED");
+
+    process.on("exit", () => {
+      writeApi.close().then(() => {
+        console.log("Ok");
+      });
+    });
+  });
+};
+
+const writePPrecipitation = async (arrData) => {
+  const writeApi = influxDB.getWriteApi(org, bucket);
+
+  const writePromises = arrData.map(async (data) => {
+    const point = new Point("p_predictation").floatField("value", data);
+    writeApi.writePoint(point);
+  });
+
+  await Promise.all(writePromises);
+  await writeApi.flush();
+  console.log("WRITE FINISHED");
+
+  process.on("exit", () => {
+    writeApi.close().then(() => {
+      console.log("Ok");
+    });
   });
 };
 
 module.exports = {
   writeDataWindyEvery3h,
+  writePPrecipitation,
 };

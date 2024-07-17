@@ -2,16 +2,16 @@
 
 const { Router } = require("express");
 const {
-  dataExportPowerForeCastByPeriodInDay,
+  dataExportPowerForeCastByPeriod,
 } = require("../controllers/dataExportController");
 
 const router = Router();
 
-router.get(
-  "/data-export-power-forecast-by-96-period-in-day",
+router.post(
+  "/data-export-power-forecast-by-96-period",
   async function (req, res) {
     try {
-      const response = await dataExportPowerForeCastByPeriodInDay(req, res);
+      const response = await dataExportPowerForeCastByPeriod(req, res);
       res.json(response);
     } catch (error) {
       console.log(error);

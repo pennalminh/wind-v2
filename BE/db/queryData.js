@@ -35,12 +35,32 @@ const getNumberTimePerday = async (numberTimeInDay) => {
   return arrResponse.reverse();
 };
 
-const getIn2Day = async (numberTime) => {
-  const groupPerMinute = 48 / getIn2Day;
-  let currentTime = groupPerMinute;
-  let arrResponse = new Array(getIn2Day).fill(null);
+const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
+  let arrResponse = [];
+  const groupPerMinute = 1440 / numberTimeInDay;
 
-  for (let index = 0; index < getIn2Day; index++) {
+  const fluxQuery = `
+    from(bucket: "${influxBucket}")
+    |> range(start: ${startDate}, stop:${endDate})
+    |> filter(fn: (r) => r.device == "Turbine1" or  r.device == "Turbine2")
+    |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
+    |> yield(name: "mean")
+    `;
+
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
+  }
+
+  return arrResponse;
+};
+
+const getIn2Day = async (numberTime) => {
+  const groupPerMinute = 2880 / numberTime;
+  let currentTime = groupPerMinute;
+  let arrResponse = new Array(numberTime).fill(null);
+
+  for (let index = 0; index < numberTime; index++) {
     const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: -${currentTime + groupPerMinute}h, stop: -${currentTime}h) 
@@ -77,8 +97,26 @@ const getLimitRecordOfWindApi = async (limit) => {
   return arrResponse;
 };
 
+const getDataPPredict = async (startDate, endDate) => {
+  const fluxQuery = `
+   from(bucket: "${influxBucket}")
+    |> range(start: ${startDate}, stop:${endDate})
+    |> filter(fn: (r) => r._measurement == "p_predictation")
+    `;
+
+  let arrResponse = [];
+
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
+  }
+  return arrResponse;
+};
+
 module.exports = {
   getLimitRecordOfWindApi,
   getNumberTimePerday,
   getIn2Day,
+  getActualDataInperiod,
+  getDataPPredict,
 };

@@ -1,12 +1,16 @@
 const express = require("express");
 const path = require("path");
-const { writeDataWindyEvery3h } = require("./db/writeData");
+const {
+  writeDataWindyEvery3h,
+  writePPrecipitation,
+} = require("./db/writeData");
 const bodyParser = require("body-parser");
 const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
-const { exportExcel96Period } = require("./controllers/exportExcelController");
 const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
+const { exportPowerForeCastByPeriodInDay } = require("./actions");
+const { writeExcelWithTemplate } = require("./actions/writeExcel");
 const app = express();
 
 require("dotenv").config();
@@ -33,7 +37,15 @@ app.use("/api", dataExportRouter);
 
 // Xuất CSV tự động vào 9h hằng ngày
 schedule.scheduleJob("0 9 * * *", async function () {
-  exportExcel96Period(req, res);
+  const arrP = await exportPowerForeCastByPeriodInDay(96);
+  writeExcelWithTemplate(arrP);
+  writePPrecipitation(arrP);
+});
+
+// Ghi lại dữ liệu dự đoán vào 00h
+schedule.scheduleJob("0 0 * * *", async function () {
+  const arrP = await exportPowerForeCastByPeriodInDay(96);
+  writePPrecipitation(arrP);
 });
 
 // Server

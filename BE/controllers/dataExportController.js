@@ -1,14 +1,29 @@
-const { exportPowerForeCastByPeriodInDay } = require("../actions");
+"use strict";
+const { powerWind } = require("../common/fomular");
+const { getActualDataInperiod, getDataPPredict } = require("../db/queryData");
 
-const dataExportPowerForeCastByPeriodInDay = async (req, res) => {
+const dataExportPowerForeCastByPeriod = async (req, res) => {
   try {
-    const arrP = await exportPowerForeCastByPeriodInDay(96);
-    return arrP;
+    const arrWindActual = await getActualDataInperiod(
+      96,
+      req.body.startDay,
+      req.body.endDay
+    );
+
+    const arrPPredict = await getDataPPredict(
+      req.body.startDay,
+      req.body.endDay
+    );
+
+    return {
+      predict: arrPPredict,
+      actual: arrWindActual.map((p) => powerWind(2, 6, p)),
+    };
   } catch (error) {
     return error;
   }
 };
 
 module.exports = {
-  dataExportPowerForeCastByPeriodInDay,
+  dataExportPowerForeCastByPeriod,
 };

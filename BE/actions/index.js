@@ -6,7 +6,11 @@ const {
   getIn2Day,
 } = require("../db/queryData");
 
-const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
+const exportPowerForeCastByPeriodInDay = async (
+  numPeriod,
+  startDay,
+  endDay
+) => {
   // P API+1
   const arrPAPIPlus1 = await getPowerWinInNextDayWindy();
 

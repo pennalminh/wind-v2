@@ -150,7 +150,6 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-
 }
 
 .input-date input {
@@ -174,4 +173,9 @@
   justify-content: flex-end;
   flex: 1;
   height: 100%;
+}
+
+.btn-search {
+  padding-inline: 18px;
+  padding-block: 4px;
 }

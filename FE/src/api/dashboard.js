@@ -2,15 +2,14 @@ import axios from 'axios'
 
 const url = import.meta.env.VITE_VUE_APP_API_URL
 
-export const callAPIGetDataForecastNextDay = async () => {
+export const callAPIGetDataForecastNextDay = async (startDay, endDay) => {
   try {
-    const response = await axios.get(`${url}/data-export-power-forecast-by-96-period-in-day`)
+    const response = await axios.post(`${url}/data-export-power-forecast-by-96-period`, {
+      startDay: startDay,
+      endDay: endDay
+    })
     return response
   } catch (error) {
     throw error
   }
 }
-
-// export const getDashboardReports = () => {
-//   return apiClient.get('/dashboard/reports')
-// }

@@ -5,7 +5,7 @@ require("dotenv").config();
 
 async function writeExcelWithTemplate(data) {
   try {
-    const excelFilePath = "../Wind-project/sampleTemplate.xlsx";
+    const excelFilePath = "../BE/sampleTemplate.xlsx";
     const currentDate = new Date();
     const formattedDate = currentDate
       .toISOString()

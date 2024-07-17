@@ -69,6 +69,12 @@
   font-weight: 200;
 }
 
+.item-fuction-btn button {
+  font-size: 14px;
+  color: var(--color-main);
+  font-weight: 200;
+}
+
 .item-fuction-btn:hover {
   cursor: pointer;
   border: 0.5px dashed #ccc;

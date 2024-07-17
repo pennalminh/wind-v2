@@ -5,10 +5,12 @@ const {
   exportPowerForeCastByPeriodIn2Day,
 } = require("../actions");
 const { writeExcelWithTemplate } = require("../actions/writeExcel");
+const { writePPrecipitation } = require("../db/writeData");
 
 const exportExcel96Period = async (req, res) => {
   try {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
+    writePPrecipitation(arrP);
     writeExcelWithTemplate(arrP);
   } catch (error) {
     return error;
