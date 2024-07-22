@@ -47,7 +47,7 @@ const writeDataWindyEvery3h = async () => {
 const writePPrecipitation = async (arrData) => {
   const writeApi = influxDB.getWriteApi(org, bucket);
 
-  const writePromises = arrData.map(async (data) => {
+  const writePromises = arrData?.map(async (data) => {
     const point = new Point("p_predictation").floatField("value", data);
     writeApi.writePoint(point);
   });

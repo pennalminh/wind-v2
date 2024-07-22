@@ -89,10 +89,47 @@ const caculatorWindSpeed = (wind_u, wind_v) => {
   return result;
 };
 
+const caculatorWindSpeedFrom10to100meter = (w) => {
+  switch (true) {
+    case w < 2.1:
+      w *= 1.8;
+      break;
+    case 2.1 <= w && w < 3.1:
+      w *= 1.72;
+      break;
+    case 3.1 <= w && w < 4.1:
+      w *= 1.65;
+      break;
+    case 4.1 <= w && w < 5.1:
+      w *= 1.58;
+      break;
+    case 5.1 <= w && w < 6.1:
+      w *= 1.54;
+      break;
+    case 6.1 <= w && w < 7.1:
+      w *= 1.51;
+      break;
+    case 7.1 <= w && w < 8.1:
+      w *= 1.49;
+      break;
+    case 8.1 <= w && w < 9.5:
+      w *= 1.465;
+      break;
+    case 9.5 <= w:
+      w *= 1.35;
+      break;
+    default:
+      w = w;
+  }
+
+  return w;
+};
+
 module.exports = {
   windPower3_6,
   windPower3_8,
   powerForescast,
   powerWind,
   caculatorWindSpeed,
+  caculatorWindSpeedFrom10to100meter,
 };
