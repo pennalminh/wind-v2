@@ -1,6 +1,6 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --sidebar-width: 300px;
+  --sidebar-width: 200px;
   --header-height: 80px;
   --background-main: #082952;
   --color-main: #fff;

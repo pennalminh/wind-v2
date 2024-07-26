@@ -7,6 +7,7 @@ export const callAPIGetForecastNextDay = async () => {
     const response = await axios.post(`${url}/export-csv-in-next-day`)
     alert('Xuất thành công')
   } catch (error) {
+    alert('Xuất không thành công, có lỗi xảy ra')
     throw error
   }
 }
@@ -16,6 +17,7 @@ export const callAPIGetForecastNext2Day = async () => {
     const response = await axios.post(`${url}/export-csv-in-next-2-day`)
     alert('Xuất thành công')
   } catch (error) {
+    alert('Xuất không thành công, có lỗi xảy ra')
     throw error
   }
 }

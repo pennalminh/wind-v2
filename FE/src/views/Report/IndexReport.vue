@@ -2,32 +2,29 @@
   <section id="MAIN-INDEX-REPORT">
     <div class="main-report">
       <div class="list-main-report">
-        <div v-for="(item, index) in items" :key="index" class="report-item" @click="item.action()">
+        <div v-for="(item, index) in items" :key="index" class="report-item">
           <div class="report-item__title">{{ ++index }}. {{ item.title }}</div>
           <div class="report-item-function">
-            <div class="item-fuction-btn">
+            <div class="dropdown-container" v-if="item.options">
+              <select id="resolution">
+                <option v-for="(option, index) in item.options" :key="index" value="option.value">
+                  {{ option.label }}
+                </option>
+                <!-- Add more options here as needed -->
+              </select>
+            </div>
+            <div class="item-fuction-btn" @click="item.action()">
               <img :src="IconExcel" alt="" />
               <span>Xuất Excel</span>
             </div>
           </div>
         </div>
-
-        <!-- <div class="report-item">
-          <div class="report-item__title">2. Dự báo công suất phát trong 2 ngày tới</div>
-          <div class="report-item-function">
-            <div class="item-fuction-btn">
-              <img :src="IconExcel" alt="" />
-              <span>Xuất Excel</span>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import IconReview from './../../assets/icons/24px/statistics.png'
 import IconExcel from './../../assets/icons/24px/xls.png'
 import { callAPIGetForecastNext2Day, callAPIGetForecastNextDay } from './../../api/report'
 
@@ -48,9 +45,24 @@ const exportExcelForecastNext2Day = async () => {
 }
 
 const items = [
-  { title: 'Dự báo công suất trong ngày vận hành', action: exportExcelForecastNextDay },
-  { title: 'Dự báo công suất phát trong 2 ngày tới', action: exportExcelForecastNext2Day },
-  { title: 'Dự báo công suất và sản lượng tuần tới', action: null },
+  {
+    title: 'Dự báo công suất trong ngày vận hành',
+    action: exportExcelForecastNextDay,
+    options: [{ label: '15 phút', value: '15m' }]
+  },
+  {
+    title: 'Dự báo công suất phát trong 2 ngày tới',
+    action: exportExcelForecastNext2Day,
+    options: [{ label: '30 phút', value: '30m' }]
+  },
+  {
+    title: 'Dự báo công suất và sản lượng tuần tới',
+    action: null,
+    options: [
+      { label: '15 phút', value: '15m' },
+      { label: '30 phút', value: '30m' }
+    ]
+  },
   { title: 'Dự báo tháng tới', action: null },
   { title: 'Dự báo năm tới', action: null },
   { title: 'Dự báo theo chọn ngày', action: null },

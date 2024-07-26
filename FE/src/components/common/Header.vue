@@ -12,22 +12,12 @@
           <img :src="MenuBarIcon" alt="" />
         </div>
       </div>
-      <ul>
-        <li title="Cài đặt">
-          <img :src="SettingIcon" alt="settings icon" />
-        </li>
-        <li title="Tài khoản">
-          <img :src="UserIcon" alt="avatar icon" />
-        </li>
-      </ul>
     </div>
   </section>
 </template>
 
 <script setup>
 import Logo from './../../assets/images/logo.png'
-import UserIcon from './../../assets/icons/24px/avatar.png'
-import SettingIcon from './../../assets/icons/24px/settings.png'
 import MenuBarIcon from './../../assets/icons/24px/menu-bar.png'
 
 const emits = defineEmits(['toggleSidebar'])

@@ -46,8 +46,6 @@ const navMenu = ref([
   }
 ])
 
-const localStorageValue = ref()
-
 onMounted(() => {
   if (localStorage.getItem('menuActive')) {
     activeMenuMounted(localStorage.getItem('menuActive'))

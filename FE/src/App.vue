@@ -5,10 +5,10 @@ import SidebarVue from './components/common/Sidebar.vue'
 const handletoggleSidebar = () => {
   const root = document.documentElement
 
-  const currentWidth = getComputedStyle(root).getPropertyValue('--sidebar-width').trim();
-  
+  const currentWidth = getComputedStyle(root).getPropertyValue('--sidebar-width').trim()
+
   if (currentWidth === '0px') {
-    root.style.setProperty('--sidebar-width', '300px')
+    root.style.setProperty('--sidebar-width', '200px')
   } else {
     root.style.setProperty('--sidebar-width', '0px')
   }

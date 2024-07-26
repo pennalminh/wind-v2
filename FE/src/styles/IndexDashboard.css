@@ -11,15 +11,6 @@
   overflow: auto;
 }
 
-/* .breadcrumb-dashboard {
-  height: 40px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-} */
-
 .header-dashboard {
   width: 100%;
   margin-bottom: 10px;
@@ -178,4 +169,10 @@
 .btn-search {
   padding-inline: 18px;
   padding-block: 4px;
+}
+
+/* styles.css */
+
+.dropdown-container {
+  text-align: center;
 }
