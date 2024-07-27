@@ -3,7 +3,7 @@
 const { InfluxDB, Point } = require("@influxdata/influxdb-client");
 const schedule = require("node-schedule");
 const { callAPIWindy } = require("../api/windy");
-const { caculatorWindSpeed } = require("../common/fomular");
+const { calculatorWindSpeed } = require("../common/fomular");
 require("dotenv").config();
 
 const url = process.env.URL_INFLUX_DB;
@@ -24,7 +24,7 @@ const writeDataWindyEvery3h = async () => {
     const response = await callAPIWindy();
     const wind_u = response.data["wind_u-surface"][1];
     const wind_v = response.data["wind_v-surface"][1];
-    const windSpeed = caculatorWindSpeed(wind_u, wind_v);
+    const windSpeed = calculatorWindSpeed(wind_u, wind_v);
 
     const point = new Point(influxMeasurementWindAPI).floatField(
       "value",

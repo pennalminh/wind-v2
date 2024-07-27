@@ -84,12 +84,12 @@ const powerForescast = (pAPI, deviation) => {
   return pAPI + pAPI * deviation;
 };
 
-const caculatorWindSpeed = (wind_u, wind_v) => {
+const calculatorWindSpeed = (wind_u, wind_v) => {
   const result = Math.sqrt(Math.pow(wind_u, 2) + Math.pow(wind_v, 2));
   return result;
 };
 
-const caculatorWindSpeedFrom10to100meter = (w) => {
+const calculatorWindSpeedFrom10to100meter = (w) => {
   switch (true) {
     case w < 2.1:
       w *= 1.8;
@@ -130,6 +130,6 @@ module.exports = {
   windPower3_8,
   powerForescast,
   powerWind,
-  caculatorWindSpeed,
-  caculatorWindSpeedFrom10to100meter,
+  calculatorWindSpeed,
+  calculatorWindSpeedFrom10to100meter,
 };

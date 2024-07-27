@@ -1,8 +1,8 @@
 const { callAPIWindy } = require("../api/windy");
 const {
-  caculatorWindSpeed,
+  calculatorWindSpeed,
   powerWind,
-  caculatorWindSpeedFrom10to100meter,
+  calculatorWindSpeedFrom10to100meter,
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
@@ -61,8 +61,8 @@ const getPowerWinInNextDayWindy = async () => {
   const response = await callAPIWindy();
   let arr96Pw = [];
   for (let index = 2; index < 10; index++) {
-    const ws = caculatorWindSpeedFrom10to100meter(
-      caculatorWindSpeed(
+    const ws = calculatorWindSpeedFrom10to100meter(
+      calculatorWindSpeed(
         response.data["wind_u-surface"][index],
         response.data["wind_v-surface"][index]
       )
@@ -81,8 +81,8 @@ const getPowerWinInNext2DayWindy = async () => {
   const response = await callAPIWindy();
   let arr48Pw = [];
   for (let index = 2; index < 18; index++) {
-    const ws = caculatorWindSpeedFrom10to100meter(
-      caculatorWindSpeed(
+    const ws = calculatorWindSpeedFrom10to100meter(
+      calculatorWindSpeed(
         response.data["wind_u-surface"][index],
         response.data["wind_v-surface"][index]
       )
