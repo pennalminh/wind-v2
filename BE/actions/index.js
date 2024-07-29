@@ -8,13 +8,13 @@ const {
   getNumberTimePerday,
   getLimitRecordOfWindApi,
   getIn2Day,
+  getRecordOfWindApi,
 } = require("../db/queryData");
 
 const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
   try {
     // P API+1
-    const arrPAPIPlus1 = await getPowerWinInNextDayWindy();
-
+    const arrPAPIPlus1 = await getPowerWinToDayWindy();
     // Lấy dữ liệu thật trong DB
     const arrWsActualMinus1 = await getNumberTimePerday(numPeriod);
     const arrPActualMinus1 = arrWsActualMinus1?.map((ws) =>
@@ -23,7 +23,7 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
     // Lấy dữ liệu windyAPI được lưu trong DB
     // 8 là 1 ngày gần nhất
-    const dataWindAPIMinus1 = await getLimitRecordOfWindApi(8);
+    const dataWindAPIMinus1 = await getRecordOfWindApi();
 
     let arrWsAPIMinus1 = [];
     dataWindAPIMinus1.reverse().forEach((ws) => {
@@ -51,16 +51,20 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
         arrPForecast.push(pForecast);
       }
     }
+    console.log(arrPForecast);
     return arrPForecast;
   } catch (error) {
     console.log(error);
   }
 };
 
-const getPowerWinInNextDayWindy = async () => {
+const getPowerWinToDayWindy = async () => {
   const response = await callAPIWindy();
   let arr96Pw = [];
-  for (let index = 2; index < 10; index++) {
+  const currentHour = new Date().getHours();
+  let lastEle = (24 - currentHour) / 3;
+
+  for (let index = 2; index < lastEle + 2; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
       calculatorWindSpeed(
         response.data["wind_u-surface"][index],

@@ -8,7 +8,7 @@ const handletoggleSidebar = () => {
   const currentWidth = getComputedStyle(root).getPropertyValue('--sidebar-width').trim()
 
   if (currentWidth === '0px') {
-    root.style.setProperty('--sidebar-width', '250px')
+    root.style.setProperty('--sidebar-width', '300px')
   } else {
     root.style.setProperty('--sidebar-width', '0px')
   }

@@ -13,23 +13,27 @@ const queryApi = influxDB.getQueryApi(org);
 
 const getNumberTimePerday = async (numberTimeInDay) => {
   const groupPerMinute = 1440 / numberTimeInDay;
-  let currentTime = groupPerMinute;
-  let arrResponse = new Array(numberTimeInDay).fill(null);
+  let arrResponse = [];
 
-  for (let index = 0; index < numberTimeInDay; index++) {
-    const fluxQuery = `
+  const previousDate = new Date();
+  previousDate.setDate(previousDate.getDate() - 1);
+
+  const today = new Date();
+  today.setDate(today.getDate() - 1);
+  today.setHours(7, 0, 0, 0);
+  today.setHours(today.getHours() + 17);
+
+  const fluxQuery = `
     from(bucket: "${influxBucket}")
-    |> range(start: -${currentTime + groupPerMinute}m, stop: -${currentTime}m) 
+    |> range(start: ${previousDate.toISOString()}, stop: ${today.toISOString()}) 
     |> filter(fn: (r) => r.device == "Turbine1" or  r.device == "Turbine2")
-    |> group()
-    |> mean()
+    |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
+    |> yield(name: "mean")
     `;
 
-    currentTime += groupPerMinute;
-    for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
-      const o = tableMeta.toObject(values);
-      arrResponse[index] = o._value;
-    }
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
   }
 
   return arrResponse.reverse();
@@ -97,6 +101,32 @@ const getLimitRecordOfWindApi = async (limit) => {
   return arrResponse;
 };
 
+const getRecordOfWindApi = async () => {
+  const currentHour = new Date().getHours();
+  console.log(currentHour);
+  let limit = (24 - currentHour) / 3;
+  if (limit % 2 != 0) {
+    limit = Math.round(limit) + 1;
+  }
+  console.log(limit);
+  const offset = 8 - limit;
+  const fluxQuery = `
+   from(bucket: "${influxBucket}")
+    |> range(start: -5d)
+    |> filter(fn: (r) => r._measurement == "${influxMeasurementWindAPI}")
+    |> sort(columns: ["_time"], desc: true)
+    |> limit(n: ${limit}, offset: ${offset} )
+    `;
+
+  let arrResponse = [];
+
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
+  }
+  return arrResponse;
+};
+
 const getDataPPredict = async (startDate, endDate) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
@@ -119,4 +149,5 @@ module.exports = {
   getIn2Day,
   getActualDataInperiod,
   getDataPPredict,
+  getRecordOfWindApi,
 };

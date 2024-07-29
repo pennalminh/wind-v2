@@ -125,6 +125,17 @@ const calculatorWindSpeedFrom10to100meter = (w) => {
   return w;
 };
 
+function fillArrayEnd(m, elements) {
+  // Xác định vị trí bắt đầu để chèn các phần tử mới
+  const startIndex = m.length - elements.length;
+
+  // Nếu vị trí bắt đầu lớn hơn hoặc bằng 0, chèn các phần tử mới vào
+  if (startIndex >= 0) {
+    m.splice(startIndex, elements.length, ...elements);
+  }
+  return m;
+}
+
 module.exports = {
   windPower3_6,
   windPower3_8,
@@ -132,4 +143,5 @@ module.exports = {
   powerWind,
   calculatorWindSpeed,
   calculatorWindSpeedFrom10to100meter,
+  fillArrayEnd,
 };
