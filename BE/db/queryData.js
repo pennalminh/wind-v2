@@ -104,14 +104,14 @@ const getLimitRecordOfWindApi = async (limit) => {
   return arrResponse;
 };
 
-const getRecordOfWindApi = async () => {
+const getRecordOfWindApi = async (numPeriod) => {
   const currentHour = new Date().getHours();
-  console.log(currentHour);
+
   let limit = (24 - currentHour) / 3;
   if (limit % 2 != 0) {
     limit = Math.round(limit) + 1;
   }
-  console.log(limit);
+
   const offset = 8 - limit;
   const fluxQuery = `
    from(bucket: "${influxBucket}")
@@ -121,13 +121,16 @@ const getRecordOfWindApi = async () => {
     |> limit(n: ${limit}, offset: ${offset} )
     `;
 
-  let arrResponse = [];
+  let arrResponse = Array(numPeriod).fill(null);
+  let tempArr = [];
 
   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
     const o = tableMeta.toObject(values);
-    arrResponse.push(o._value);
+    tempArr.push(o._value);
   }
-  return arrResponse;
+
+  const result = fillArrayEnd(arrResponse, tempArr);
+  return result;
 };
 
 const getDataPPredict = async (startDate, endDate) => {
