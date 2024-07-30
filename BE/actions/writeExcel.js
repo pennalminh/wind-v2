@@ -7,10 +7,12 @@ async function writeExcelWithTemplate(data) {
   try {
     const excelFilePath = "../BE/sampleTemplate.xlsx";
     const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 7);
+
     const formattedDate = currentDate
       .toISOString()
       .replace(/:/g, "-")
-      .split(".")[0]; // Format date as YYYY-MM-DDTHH-MM-SS
+      .split(".")[0];
     const csvFilePath = path.join(
       process.env.PATH_SAVE_CSV,
       `forecast-${formattedDate}.csv`

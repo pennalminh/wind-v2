@@ -125,7 +125,7 @@ const calculatorWindSpeedFrom10to100meter = (w) => {
   return w;
 };
 
-function fillArrayEnd(m, elements) {
+const fillArrayEnd = (m, elements) => {
   // Xác định vị trí bắt đầu để chèn các phần tử mới
   const startIndex = m.length - elements.length;
 
@@ -134,7 +134,7 @@ function fillArrayEnd(m, elements) {
     m.splice(startIndex, elements.length, ...elements);
   }
   return m;
-}
+};
 
 module.exports = {
   windPower3_6,

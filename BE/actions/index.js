@@ -3,6 +3,7 @@ const {
   calculatorWindSpeed,
   powerWind,
   calculatorWindSpeedFrom10to100meter,
+  fillArrayEnd,
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
@@ -22,7 +23,6 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
     );
 
     // Lấy dữ liệu windyAPI được lưu trong DB
-    // 8 là 1 ngày gần nhất
     const dataWindAPIMinus1 = await getRecordOfWindApi();
 
     let arrWsAPIMinus1 = [];
@@ -60,9 +60,10 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
 const getPowerWinToDayWindy = async () => {
   const response = await callAPIWindy();
-  let arr96Pw = [];
+  let arr96Pw = Array(96).fill(null);
   const currentHour = new Date().getHours();
   let lastEle = (24 - currentHour) / 3;
+  let tempArr = [];
 
   for (let index = 2; index < lastEle + 2; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
@@ -74,11 +75,12 @@ const getPowerWinToDayWindy = async () => {
 
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
-      arr96Pw.push(pw);
+      tempArr.push(pw);
     }
   }
 
-  return arr96Pw;
+  const result = fillArrayEnd(arr96Pw, tempArr);
+  return result;
 };
 
 const getPowerWinInNext2DayWindy = async () => {

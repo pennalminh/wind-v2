@@ -1,4 +1,5 @@
 const { InfluxDB, Point } = require("@influxdata/influxdb-client");
+const { fillArrayEnd } = require("../common/fomular");
 require("dotenv").config();
 
 /** Environment variables **/
@@ -13,7 +14,8 @@ const queryApi = influxDB.getQueryApi(org);
 
 const getNumberTimePerday = async (numberTimeInDay) => {
   const groupPerMinute = 1440 / numberTimeInDay;
-  let arrResponse = [];
+  let arrResponse = Array(numberTimeInDay).fill(null);
+  let tempArr = [];
 
   const previousDate = new Date();
   previousDate.setDate(previousDate.getDate() - 1);
@@ -33,10 +35,11 @@ const getNumberTimePerday = async (numberTimeInDay) => {
 
   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
     const o = tableMeta.toObject(values);
-    arrResponse.push(o._value);
+    tempArr.push(o._value);
   }
 
-  return arrResponse.reverse();
+  const result = fillArrayEnd(arrResponse, tempArr);
+  return result;
 };
 
 const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
