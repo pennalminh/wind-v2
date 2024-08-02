@@ -9,7 +9,10 @@ const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
 const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
-const { exportPowerForeCastByPeriodInDay } = require("./actions");
+const {
+  exportPowerForeCastByPeriodInDay,
+  exportPowerForeCastByPeriodInNextDay,
+} = require("./actions");
 const { writeExcelWithTemplate } = require("./actions/writeExcel");
 const app = express();
 
@@ -39,12 +42,11 @@ app.use("/api", dataExportRouter);
 schedule.scheduleJob("0 9 * * *", async function () {
   const arrP = await exportPowerForeCastByPeriodInDay(96);
   writeExcelWithTemplate(arrP);
-  writePPrecipitation(arrP);
 });
 
 // Ghi lại dữ liệu dự đoán vào 00h
 schedule.scheduleJob("0 0 * * *", async function () {
-  const arrP = await exportPowerForeCastByPeriodInDay(96);
+  const arrP = await exportPowerForeCastByPeriodInNextDay(96);
   writePPrecipitation(arrP);
 });
 

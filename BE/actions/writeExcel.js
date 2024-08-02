@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 
-async function writeExcelWithTemplate(data) {
+async function writeExcelWithTemplate(data, nameFile) {
   try {
     const excelFilePath = "../BE/sampleTemplate.xlsx";
     const currentDate = new Date();
@@ -15,7 +15,7 @@ async function writeExcelWithTemplate(data) {
       .split(".")[0];
     const csvFilePath = path.join(
       process.env.PATH_SAVE_CSV,
-      `forecast-${formattedDate}.csv`
+      `${nameFile}-${formattedDate}.csv`
     );
 
     // Đọc tệp Excel
