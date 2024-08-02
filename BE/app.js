@@ -9,10 +9,7 @@ const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
 const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
-const {
-  exportPowerForeCastByPeriodInDay,
-  exportPowerForeCastByPeriodInNextDay,
-} = require("./actions");
+const { exportPowerForeCastByPeriodInDay } = require("./actions");
 const { writeExcelWithTemplate } = require("./actions/writeExcel");
 const app = express();
 
@@ -39,16 +36,31 @@ app.use("/api", exportExcelRouter);
 app.use("/api", dataExportRouter);
 
 // Xuất CSV tự động vào 9h hằng ngày
-schedule.scheduleJob("0 9 * * *", async function () {
-  const arrP = await exportPowerForeCastByPeriodInDay(96);
-  writeExcelWithTemplate(arrP);
-});
+schedule.scheduleJob(
+  {
+    hour: 9,
+    minute: 0,
+    tz: "Asia/Ho_Chi_Minh",
+  },
+  async function () {
+    const arrP = await exportPowerForeCastByPeriodInDay(96);
+    writeExcelWithTemplate(arrP);
+  }
+);
 
 // Ghi lại dữ liệu dự đoán vào 00h
-schedule.scheduleJob("0 0 * * *", async function () {
-  const arrP = await exportPowerForeCastByPeriodInNextDay(96);
-  writePPrecipitation(arrP);
-});
+schedule.scheduleJob(
+  {
+    hour: 0,
+    minute: 16,
+    tz: "Asia/Ho_Chi_Minh",
+  },
+  async function () {
+    const arrP = await exportPowerForeCastByPeriodInDay(96);
+    console.log("Minh pro", arrP);
+    // writePPrecipitation(arrP);
+  }
+);
 
 // Server
 const PORT = process.env.PORT || 3000;

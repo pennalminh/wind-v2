@@ -22,8 +22,8 @@ const getNumberTimePerday = async (numberTimeInDay) => {
 
   const today = new Date();
   today.setDate(today.getDate() - 1);
-  today.setHours(7, 0, 0, 0);
-  today.setHours(today.getHours() + 17);
+  today.setHours(0, 0, 0, 0);
+  today.setHours(today.getHours() + 24);
 
   const fluxQuery = `
     from(bucket: "${influxBucket}")
@@ -40,21 +40,32 @@ const getNumberTimePerday = async (numberTimeInDay) => {
     tempArr.push(o._value);
   }
 
+  if (tempArr.length > numberTimeInDay) {
+    tempArr.pop();
+  }
+
   const result = fillArrayEnd(arrResponse, tempArr);
+
   return result;
 };
 
 const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
   let arrResponse = [];
   const groupPerMinute = 1440 / numberTimeInDay;
+  const start = new Date(startDate);
+  start.setHours(start.getHours() - 7);
+
+  const end = new Date(endDate);
+  end.setHours(end.getHours() - 7);
 
   const fluxQuery = `
     from(bucket: "${influxBucket}")
-    |> range(start: ${startDate}, stop:${endDate})
+    |> range(start: ${start.toISOString()}, stop:${end.toISOString()})
     |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
-    |> yield(name: "mean")
+    |> group(columns: ["_time"])
+    |> mean()
     `;
 
   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
@@ -103,9 +114,15 @@ const getRecordOfWindApi = async (numPeriod, limit, offset) => {
 };
 
 const getDataPPredict = async (startDate, endDate) => {
+  const start = new Date(startDate);
+  start.setHours(start.getHours() + 24);
+
+  const end = new Date(endDate);
+  end.setHours(end.getHours() + 24);
+
   const fluxQuery = `
    from(bucket: "${influxBucket}")
-    |> range(start: ${startDate}, stop:${endDate})
+    |> range(start: ${start.toISOString()}, stop:${end.toISOString()})
     |> filter(fn: (r) => r._measurement == "p_predictation")
     `;
 
@@ -124,11 +141,12 @@ const getDataYesterday = async (numberTime) => {
   let arrResponse = new Array(numberTime).fill(null);
   let tempArr = [];
   const start = new Date();
-  start.setDate(start.getDate() - 1);
-  start.setHours(7, 0, 0, 0);
+  start.setDate(start.getDate() - 2);
+  start.setHours(24, 0, 0, 0);
 
   const end = new Date();
-  end.setHours(7, 0, 0, 0);
+  end.setDate(end.getDate() - 1);
+  end.setHours(24, 0, 0, 0);
 
   const fluxQuery = `
    from(bucket: "${influxBucket}")
@@ -139,7 +157,6 @@ const getDataYesterday = async (numberTime) => {
     |> group(columns: ["_time"])
     |> mean()
     `;
-  console.log(fluxQuery);
 
   currentTime += groupPerMinute;
   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
@@ -148,7 +165,6 @@ const getDataYesterday = async (numberTime) => {
   }
 
   const result = fillArrayEnd(arrResponse, tempArr);
-  console.log(result);
   return result;
 };
 
@@ -158,11 +174,12 @@ const getData2daysAgo = async (numberTime) => {
   let arrResponse = new Array(numberTime).fill(null);
   let tempArr = [];
   const start = new Date();
-  start.setDate(start.getDate() - 2);
-  start.setHours(7, 0, 0, 0);
+  start.setDate(start.getDate() - 3);
+  start.setHours(24, 0, 0, 0);
 
   const end = new Date();
-  end.setHours(7, 0, 0, 0);
+  end.setDate(end.getDate() - 1);
+  end.setHours(24, 0, 0, 0);
 
   const fluxQuery = `
    from(bucket: "${influxBucket}")
