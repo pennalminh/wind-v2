@@ -140,7 +140,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   const arrPAPIPlus1 = await getPowerWindInNextDay2Windy(numPeriod);
 
   // Lấy dữ liệu thật trong DB
-  const arrWsActualMinus1 = await getData2daysAgo(numPeriod);
+  const arrWsActualMinus1 = await getDataYesterday(numPeriod);
   const arrPActualMinus1 = arrWsActualMinus1?.map((ws) => powerWind(2, 6, ws));
 
   // Lấy dữ liệu windyAPI được lưu trong DB
@@ -242,7 +242,7 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   let startEle = (24 - currentHour) / 3;
   let tempArr = [];
 
-  for (let index = startEle + 2; index < startEle + 18; index++) {
+  for (let index = startEle + 10; index < startEle + 18; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
       calculatorWindSpeed(
         response.data["wind_u-surface"][index],

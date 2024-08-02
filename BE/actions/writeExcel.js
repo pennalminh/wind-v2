@@ -44,7 +44,10 @@ async function writeExcelWithTemplate(data, nameFile) {
       }
     });
 
-    mainData.push(["A ngày (MWh)", totalP]);
+    mainData.push([
+      "A ngày (MWh)",
+      data.length == 96 ? totalP / 4 : totalP / 2,
+    ]);
 
     // Convert mainData array to CSV string
     const mainDataCsv = mainData.map((row) => row.join(",")).join("\n");
