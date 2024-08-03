@@ -57,8 +57,7 @@ schedule.scheduleJob(
   },
   async function () {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
-    console.log("Minh pro", arrP);
-    // writePPrecipitation(arrP);
+    writePPrecipitation(arrP);
   }
 );
 

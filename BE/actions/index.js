@@ -21,8 +21,6 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
     // Lấy dữ liệu thật trong DB
     const arrWsActualMinus1 = await getNumberTimePerday(numPeriod);
 
-    console.log(arrWsActualMinus1);
-
     const arrPActualMinus1 = arrWsActualMinus1?.map((ws) =>
       ws == null ? null : powerWind(2, 6, ws)
     );
@@ -35,7 +33,11 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
     }
     const offset = 8 - limit;
 
-    const dataWindAPIMinus1 = await getRecordOfWindApi(96, limit, offset);
+    const dataWindAPIMinus1 = await getRecordOfWindApi(
+      numPeriod,
+      limit,
+      offset
+    );
 
     let arrWsAPIMinus1 = Array(numPeriod).fill(null);
     let tempArr = [];
@@ -74,8 +76,7 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
       if (isNaN(arrDeviation[index])) {
         arrPForecast.push(arrPAPIPlus1[index]);
       } else {
-        const pForecast =
-          arrPAPIPlus1[index] + (arrDeviation[index] * 17) / 100;
+        const pForecast = (arrDeviation[index] * 17) / 100;
         arrPForecast.push(pForecast);
       }
     }
@@ -127,7 +128,7 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
     if (isNaN(arrDeviation[index])) {
       arrPForecast.push(arrPAPIPlus1[index]);
     } else {
-      const pForecast = arrPAPIPlus1[index] + (arrDeviation[index] * 17) / 100;
+      const pForecast = (arrDeviation[index] * 17) / 100;
       arrPForecast.push(pForecast);
     }
   }
@@ -175,7 +176,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
     if (isNaN(arrDeviation[index])) {
       arrPForecast.push(arrPAPIPlus1[index]);
     } else {
-      const pForecast = arrPAPIPlus1[index] + (arrDeviation[index] * 17) / 100;
+      const pForecast = (arrDeviation[index] * 17) / 100;
       arrPForecast.push(pForecast);
     }
   }
@@ -213,7 +214,7 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
   const response = await callAPIWindy();
   let arrPw = Array(numPeriod).fill(null);
   const currentHour = new Date().getHours();
-  let startEle = (24 - currentHour) / 3;
+  let startEle = parseInt((24 - currentHour) / 3);
   let tempArr = [];
 
   for (let index = startEle + 2; index < startEle + 10; index++) {
@@ -239,7 +240,7 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   const response = await callAPIWindy();
   let arrPw = Array(numPeriod).fill(null);
   const currentHour = new Date().getHours();
-  let startEle = (24 - currentHour) / 3;
+  let startEle = parseInt((24 - currentHour) / 3);
   let tempArr = [];
 
   for (let index = startEle + 10; index < startEle + 18; index++) {

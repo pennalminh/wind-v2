@@ -68,9 +68,9 @@ const items = [
     options: [{ label: '15 phút', value: '30m' }]
   },
   {
-    title: 'Dự báo công suất phát trong 2 ngày tới',
+    title: 'Dự báo công suất phát ngày kia',
     action: exportExcelForecastNext2Day,
-    options: [{ label: '60 phút', value: '60m' }]
+    options: [{ label: '30 phút', value: '30m' }]
   },
   {
     title: 'Dự báo công suất và sản lượng tuần tới',
