@@ -105,8 +105,8 @@ const dataChart = ref({
       label: 'Công suất thực tế',
       data: [1, 2, 3],
       fill: false,
-      borderColor: 'yellow',
-      backgroundColor: 'yellow',
+      borderColor: 'blue',
+      backgroundColor: 'blue',
       tension: 0.3
     },
     {
