@@ -76,7 +76,8 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
       if (isNaN(arrDeviation[index])) {
         arrPForecast.push(arrPAPIPlus1[index]);
       } else {
-        const pForecast = (arrDeviation[index] * 17) / 100;
+        const pForecast =
+          arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
         arrPForecast.push(pForecast);
       }
     }
@@ -128,7 +129,8 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
     if (isNaN(arrDeviation[index])) {
       arrPForecast.push(arrPAPIPlus1[index]);
     } else {
-      const pForecast = (arrDeviation[index] * 17) / 100;
+      const pForecast =
+        arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
       arrPForecast.push(pForecast);
     }
   }
@@ -192,12 +194,9 @@ const getPowerWinToDayWindy = async () => {
   let lastEle = (24 - currentHour) / 3;
   let tempArr = [];
 
-  for (let index = 2; index < lastEle + 2; index++) {
+  for (let index = 0; index < lastEle; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
-      calculatorWindSpeed(
-        response.data["wind_u-surface"][index],
-        response.data["wind_v-surface"][index]
-      )
+      response.list[index].wind.speed
     );
 
     const pw = powerWind(2, 6, ws);
@@ -217,12 +216,9 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
   let startEle = parseInt((24 - currentHour) / 3);
   let tempArr = [];
 
-  for (let index = startEle + 2; index < startEle + 10; index++) {
+  for (let index = startEle; index < startEle; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
-      calculatorWindSpeed(
-        response.data["wind_u-surface"][index],
-        response.data["wind_v-surface"][index]
-      )
+      response.list[index].wind.speed
     );
 
     const pw = powerWind(2, 6, ws);
@@ -232,7 +228,6 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
   }
 
   const result = fillArrayEnd(arrPw, tempArr);
-
   return result;
 };
 
@@ -243,21 +238,19 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   let startEle = parseInt((24 - currentHour) / 3);
   let tempArr = [];
 
-  for (let index = startEle + 10; index < startEle + 18; index++) {
+  for (let index = startEle + 8; index < startEle + 16; index++) {
     const ws = calculatorWindSpeedFrom10to100meter(
-      calculatorWindSpeed(
-        response.data["wind_u-surface"][index],
-        response.data["wind_v-surface"][index]
-      )
+      response.list[index].wind.speed
     );
 
     const pw = powerWind(2, 6, ws);
-    for (let j = 0; j < 12; j++) {
+    for (let j = 0; j < 6; j++) {
       tempArr.push(pw);
     }
   }
 
   const result = fillArrayEnd(arrPw, tempArr);
+
   return result;
 };
 
