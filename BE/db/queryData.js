@@ -8,6 +8,8 @@ const token = process.env.INFLUXDB_TOKEN;
 const org = process.env.ORGANIZATION_ID;
 const influxBucket = process.env.INFLUX_BUCKET;
 const influxMeasurementWindAPI = process.env.INFLUX_MEASUREMENT_WINDY_API;
+const influxMeasurementWindAPIHistory =
+  process.env.INFLUX_MEASUREMENT_WINDY_API_HISTORY;
 
 const influxDB = new InfluxDB({ url, token });
 const queryApi = influxDB.getQueryApi(org);
@@ -76,25 +78,7 @@ const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
   return arrResponse;
 };
 
-const getLimitRecordOfWindApi = async (limit) => {
-  const fluxQuery = `
-   from(bucket: "${influxBucket}")
-    |> range(start: -5d)
-    |> filter(fn: (r) => r._measurement == "${influxMeasurementWindAPI}")
-    |> sort(columns: ["_time"], desc: true)
-    |> limit(n: ${limit})
-    `;
-
-  let arrResponse = [];
-
-  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
-    const o = tableMeta.toObject(values);
-    arrResponse.push(o._value);
-  }
-  return arrResponse;
-};
-
-const getRecordOfWindApi = async (numPeriod, limit, offset) => {
+const getRecordOfWindApi = async (limit, offset) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
     |> range(start: -5d)
@@ -110,7 +94,26 @@ const getRecordOfWindApi = async (numPeriod, limit, offset) => {
     arrResponse.push(o._value);
   }
 
-  return arrResponse;
+  return arrResponse.reverse();
+};
+
+const getRecordOfWindApiHistory = async (limit, offset) => {
+  const fluxQuery = `
+   from(bucket: "${influxBucket}")
+    |> range(start: -5d)
+    |> filter(fn: (r) => r._measurement == "${influxMeasurementWindAPIHistory}")
+    |> sort(columns: ["_time"], desc: true)
+    |> limit(n: ${limit}, offset: ${offset} )
+    `;
+
+  let arrResponse = [];
+
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
+  }
+
+  return arrResponse.reverse();
 };
 
 const getDataPPredict = async (startDate, endDate) => {
@@ -200,18 +203,15 @@ const getData2daysAgo = async (numberTime) => {
   }
 
   const result = fillArrayEnd(arrResponse, tempArr);
-
-  console.log(result);
-
   return result;
 };
 
 module.exports = {
-  getLimitRecordOfWindApi,
   getNumberTimePerday,
   getActualDataInperiod,
   getDataPPredict,
   getRecordOfWindApi,
   getDataYesterday,
   getData2daysAgo,
+  getRecordOfWindApiHistory,
 };

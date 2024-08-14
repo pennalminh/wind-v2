@@ -52,8 +52,9 @@ async function writeExcelWithTemplate(data, nameFile) {
     // Convert mainData array to CSV string
     const mainDataCsv = mainData.map((row) => row.join(",")).join("\n");
 
-    // Ghi dữ liệu CSV ra tệp
-    fs.writeFileSync(csvFilePath, head + "\n" + mainDataCsv, "utf8");
+    // Ghi dữ liệu CSV ra tệp với BOM
+    const bom = "\uFEFF"; // BOM cho UTF-8
+    fs.writeFileSync(csvFilePath, bom + head + "\n" + mainDataCsv, "utf8");
 
     console.log("CSV file written successfully");
   } catch (error) {

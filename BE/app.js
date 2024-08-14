@@ -1,12 +1,10 @@
 const express = require("express");
 const path = require("path");
-const {
-  writeDataWindyEvery3h,
-  writePPrecipitation,
-} = require("./db/writeData");
+const { writePPrecipitation } = require("./db/writeData");
 const bodyParser = require("body-parser");
 const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
+const windyRouter = require("./routers/windyRouter");
 const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
 const { exportPowerForeCastByPeriodInDay } = require("./actions");
@@ -26,14 +24,13 @@ app.use(bodyParser.json());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-writeDataWindyEvery3h();
-
 app.get("/", (req, res) => {
   res.render("index");
 });
 
 app.use("/api", exportExcelRouter);
 app.use("/api", dataExportRouter);
+app.use("/api", windyRouter);
 
 // Xuất CSV tự động vào 9h hằng ngày
 schedule.scheduleJob(
@@ -52,7 +49,7 @@ schedule.scheduleJob(
 schedule.scheduleJob(
   {
     hour: 0,
-    minute: 0,
+    minute: 10,
     tz: "Asia/Ho_Chi_Minh",
   },
   async function () {

@@ -1,4 +1,3 @@
-const { callAPIWindy } = require("../api/windy");
 const {
   calculatorWindSpeed,
   powerWind,
@@ -7,16 +6,22 @@ const {
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
-  getLimitRecordOfWindApi,
   getRecordOfWindApi,
   getDataYesterday,
-  getData2daysAgo,
+  getRecordOfWindApiHistory,
 } = require("../db/queryData");
 
 const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
   try {
     // P API+1
-    const arrPAPIPlus1 = await getPowerWinToDayWindy();
+    const arrWinSpeedToday = await getRecordOfWindApi(24, 48);
+
+    arrPAPIToday = [];
+    arrWinSpeedToday.map((ws) => {
+      for (let index = 0; index < 4; index++) {
+        arrPAPIToday.push(powerWind(2, 6, ws));
+      }
+    });
 
     // Lấy dữ liệu thật trong DB
     const arrWsActualMinus1 = await getNumberTimePerday(numPeriod);
@@ -27,22 +32,15 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
     // Lấy dữ liệu windyAPI được lưu trong DB
     const currentHour = new Date().getHours();
-    let limit = (24 - currentHour) / 3;
-    if (limit % 2 != 0) {
-      limit = Math.round(limit);
-    }
-    const offset = 8 - limit;
+    let limit = 24 - currentHour;
+    const offset = 24;
 
-    const dataWindAPIMinus1 = await getRecordOfWindApi(
-      numPeriod,
-      limit,
-      offset
-    );
+    const dataWindAPIMinus1 = await getRecordOfWindApiHistory(limit, offset);
 
     let arrWsAPIMinus1 = Array(numPeriod).fill(null);
     let tempArr = [];
     dataWindAPIMinus1.forEach((ws) => {
-      for (let index = 0; index < 12; index++) {
+      for (let index = 0; index < 4; index++) {
         tempArr.push(ws);
       }
     });
@@ -68,16 +66,16 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
     // Tính P dự báo
     let arrPForecast = [];
-    for (let index = 0; index < arrPAPIPlus1.length; index++) {
+    for (let index = 0; index < arrPAPIToday.length; index++) {
       if (arrDeviation[index] == null) {
         arrPForecast.push(null);
         continue;
       }
       if (isNaN(arrDeviation[index])) {
-        arrPForecast.push(arrPAPIPlus1[index]);
+        arrPForecast.push(arrPAPIToday[index]);
       } else {
         const pForecast =
-          arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
+          arrPAPIToday[index] * 0.7 + arrPActualMinus1[index] * 0.3;
         arrPForecast.push(pForecast);
       }
     }
@@ -90,7 +88,14 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
 const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   // P API+1
-  const arrPAPIPlus1 = await getPowerWindInNextDayWindy(numPeriod);
+  const arrWinSpeedNextDay = await getRecordOfWindApi(24, 24);
+
+  arrPAPINextDay = [];
+  arrWinSpeedNextDay.map((ws) => {
+    for (let index = 0; index < 4; index++) {
+      arrPAPINextDay.push(powerWind(2, 6, ws));
+    }
+  });
 
   // Lấy dữ liệu thật trong DB
   const arrWsActualMinus1 = await getDataYesterday(numPeriod);
@@ -98,15 +103,14 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   const arrPActualMinus1 = arrWsActualMinus1?.map((ws) => powerWind(2, 6, ws));
 
   // Lấy dữ liệu windyAPI được lưu trong DB
-  const currentHour = new Date().getHours();
-  let limit = 8;
-  let offset = parseInt(currentHour / 3);
+  let limit = 24;
+  let offset = 24;
 
-  const dataWindAPIMinus1 = await getRecordOfWindApi(numPeriod, limit, offset);
+  const dataWindAPIMinus1 = await getRecordOfWindApi(limit, offset);
 
   let arrWsAPIMinus1 = [];
   dataWindAPIMinus1.forEach((ws) => {
-    for (let index = 0; index < 12; index++) {
+    for (let index = 0; index < 4; index++) {
       arrWsAPIMinus1.push(ws);
     }
   });
@@ -125,12 +129,12 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
 
   // Tính P dự báo
   let arrPForecast = [];
-  for (let index = 0; index < arrPAPIPlus1.length; index++) {
+  for (let index = 0; index < arrPAPINextDay.length; index++) {
     if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPIPlus1[index]);
+      arrPForecast.push(arrPAPINextDay[index]);
     } else {
       const pForecast =
-        arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
+        arrPAPINextDay[index] * 0.7 + arrPActualMinus1[index] * 0.3;
       arrPForecast.push(pForecast);
     }
   }
@@ -139,23 +143,25 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
 };
 
 const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
-  // P API+1
-  const arrPAPIPlus1 = await getPowerWindInNextDay2Windy(numPeriod);
+  // P API+2
+  const arrWinSpeedNext2Day = await getRecordOfWindApi(24, 0);
 
-  // Lấy dữ liệu thật trong DB
-  const arrWsActualMinus1 = await getDataYesterday(numPeriod);
-  const arrPActualMinus1 = arrWsActualMinus1?.map((ws) => powerWind(2, 6, ws));
+  arrPAPINext2Day = [];
+  arrWinSpeedNext2Day.map((ws) => {
+    for (let index = 0; index < 4; index++) {
+      arrPAPINext2Day.push(powerWind(2, 6, ws));
+    }
+  });
 
   // Lấy dữ liệu windyAPI được lưu trong DB
-  const currentHour = new Date().getHours();
-  let limit = 8;
-  let offset = parseInt(currentHour / 3);
+  let limit = 24;
+  let offset = 24;
 
   const dataWindAPIMinus1 = await getRecordOfWindApi(numPeriod, limit, offset);
 
   let arrWsAPIMinus1 = [];
   dataWindAPIMinus1.forEach((ws) => {
-    for (let index = 0; index < 12; index++) {
+    for (let index = 0; index < 2; index++) {
       arrWsAPIMinus1.push(ws);
     }
   });
@@ -174,84 +180,17 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
 
   // Tính P dự báo
   let arrPForecast = [];
-  for (let index = 0; index < arrPAPIPlus1.length; index++) {
+  for (let index = 0; index < arrPAPINext2Day.length; index++) {
     if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPIPlus1[index]);
+      arrPForecast.push(arrPAPINext2Day[index]);
     } else {
-      const pForecast = (arrDeviation[index] * 17) / 100;
+      const pForecast =
+        arrPAPINext2Day[index] * 0.7 + arrPActualMinus1[index] * 0.3;
       arrPForecast.push(pForecast);
     }
   }
 
   return arrPForecast.map((p) => (p > 30 ? 29 + Math.random() : p));
-};
-
-const getPowerWinToDayWindy = async () => {
-  const response = await callAPIWindy();
-
-  let arr96Pw = Array(96).fill(null);
-  const currentHour = new Date().getHours();
-  let lastEle = (24 - currentHour) / 3;
-  let tempArr = [];
-
-  for (let index = 0; index < lastEle; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
-    const pw = powerWind(2, 6, ws);
-    for (let j = 0; j < 12; j++) {
-      tempArr.push(pw);
-    }
-  }
-
-  const result = fillArrayEnd(arr96Pw, tempArr);
-  return result;
-};
-
-const getPowerWindInNextDayWindy = async (numPeriod) => {
-  const response = await callAPIWindy();
-  let arrPw = Array(numPeriod).fill(null);
-  const currentHour = new Date().getHours();
-  let startEle = parseInt((24 - currentHour) / 3);
-  let tempArr = [];
-
-  for (let index = startEle; index < startEle; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
-    const pw = powerWind(2, 6, ws);
-    for (let j = 0; j < 12; j++) {
-      tempArr.push(pw);
-    }
-  }
-
-  const result = fillArrayEnd(arrPw, tempArr);
-  return result;
-};
-
-const getPowerWindInNextDay2Windy = async (numPeriod) => {
-  const response = await callAPIWindy();
-  let arrPw = Array(numPeriod).fill(null);
-  const currentHour = new Date().getHours();
-  let startEle = parseInt((24 - currentHour) / 3);
-  let tempArr = [];
-
-  for (let index = startEle + 8; index < startEle + 16; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
-    const pw = powerWind(2, 6, ws);
-    for (let j = 0; j < 6; j++) {
-      tempArr.push(pw);
-    }
-  }
-
-  const result = fillArrayEnd(arrPw, tempArr);
-
-  return result;
 };
 
 module.exports = {

@@ -1,8 +1,6 @@
 "use strict";
 
 const { InfluxDB, Point } = require("@influxdata/influxdb-client");
-const schedule = require("node-schedule");
-const { callAPIWindy } = require("../api/windy");
 const { calculatorWindSpeedFrom10to100meter } = require("../common/fomular");
 require("dotenv").config();
 
@@ -11,6 +9,8 @@ const token = process.env.INFLUXDB_TOKEN;
 const org = process.env.ORGANIZATION_ID;
 const bucket = process.env.INFLUX_BUCKET;
 const influxMeasurementWindAPI = process.env.INFLUX_MEASUREMENT_WINDY_API;
+const influxMeasurementWindAPIHistory =
+  process.env.INFLUX_MEASUREMENT_WINDY_API_HISTORY;
 
 // Instantiate the InfluxDB client
 const influxDB = new InfluxDB({ url, token });
@@ -18,28 +18,52 @@ const influxDB = new InfluxDB({ url, token });
 // Create a write client from the getWriteApi method, providing your org and bucket.
 
 // Apply default tags to all points if needed
-const writeDataWindyEvery3h = async () => {
+const writeDataWindy = async (arrWindspeed) => {
   const writeApi = influxDB.getWriteApi(org, bucket);
-  schedule.scheduleJob("0 */3 * * *", async function () {
-    const response = await callAPIWindy();
-    let windSpeed = calculatorWindSpeedFrom10to100meter(
-      response.list[0].wind.speed
-    );
 
+  const writePromises = arrWindspeed?.map(async (data) => {
+    let windSpeed = calculatorWindSpeedFrom10to100meter(data);
     const point = new Point(influxMeasurementWindAPI).floatField(
       "value",
       windSpeed
     );
 
     writeApi.writePoint(point);
+  });
 
-    await writeApi.flush();
-    console.log("WRITE FINISHED");
+  await Promise.all(writePromises);
+  await writeApi.flush();
 
-    process.on("exit", () => {
-      writeApi.close().then(() => {
-        console.log("Ok");
-      });
+  console.log("WRITE FINISHED");
+
+  process.on("exit", () => {
+    writeApi.close().then(() => {
+      console.log("Ok");
+    });
+  });
+};
+
+const writeDataWindyHistory = async (arrWindspeed) => {
+  const writeApi = influxDB.getWriteApi(org, bucket);
+
+  const writePromises = arrWindspeed?.map(async (data) => {
+    let windSpeed = calculatorWindSpeedFrom10to100meter(data);
+    const point = new Point(influxMeasurementWindAPIHistory).floatField(
+      "value",
+      windSpeed
+    );
+
+    writeApi.writePoint(point);
+  });
+
+  await Promise.all(writePromises);
+  await writeApi.flush();
+
+  console.log("WRITE FINISHED");
+
+  process.on("exit", () => {
+    writeApi.close().then(() => {
+      console.log("Ok");
     });
   });
 };
@@ -67,6 +91,7 @@ const writePPrecipitation = async (arrData) => {
 };
 
 module.exports = {
-  writeDataWindyEvery3h,
+  writeDataWindy,
   writePPrecipitation,
+  writeDataWindyHistory,
 };
