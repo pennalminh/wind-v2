@@ -41,7 +41,7 @@ schedule.scheduleJob(
   },
   async function () {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
-    writeExcelWithTemplate(arrP);
+    writeExcelWithTemplate(arrP, "Dự báo trong ngày");
   }
 );
 
