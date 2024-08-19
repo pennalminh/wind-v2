@@ -49,7 +49,7 @@ schedule.scheduleJob(
 schedule.scheduleJob(
   {
     hour: 0,
-    minute: 13,
+    minute: 10,
     tz: "Asia/Ho_Chi_Minh",
   },
   async function () {
