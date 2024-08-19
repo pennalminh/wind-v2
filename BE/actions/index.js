@@ -106,7 +106,7 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   let limit = 24;
   let offset = 24;
 
-  const dataWindAPIMinus1 = await getRecordOfWindApi(limit, offset);
+  const dataWindAPIMinus1 = await getRecordOfWindApiHistory(limit, offset);
 
   let arrWsAPIMinus1 = [];
   dataWindAPIMinus1.forEach((ws) => {
@@ -155,9 +155,9 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
 
   // Lấy dữ liệu windyAPI được lưu trong DB
   let limit = 24;
-  let offset = 24;
+  let offset = 48;
 
-  const dataWindAPIMinus1 = await getRecordOfWindApi(numPeriod, limit, offset);
+  const dataWindAPIMinus1 = await getRecordOfWindApiHistory(limit, offset);
 
   let arrWsAPIMinus1 = [];
   dataWindAPIMinus1.forEach((ws) => {

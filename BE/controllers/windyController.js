@@ -8,7 +8,7 @@ const getDataWindy = async (req, res) => {
     const arrData = parseStringToArray(req.body.wind_speed);
     setTimeout(() => {
       writeDataWindyHistory(arrData.slice(0, 10));
-    }, 500);
+    }, 1000);
     writeDataWindy(arrData);
   } catch (error) {
     return error;

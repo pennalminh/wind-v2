@@ -100,7 +100,7 @@ const getRecordOfWindApi = async (limit, offset) => {
 const getRecordOfWindApiHistory = async (limit, offset) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
-    |> range(start: -5d)
+    |> range(start: -10d)
     |> filter(fn: (r) => r._measurement == "${influxMeasurementWindAPIHistory}")
     |> sort(columns: ["_time"], desc: true)
     |> limit(n: ${limit}, offset: ${offset} )
@@ -112,6 +112,8 @@ const getRecordOfWindApiHistory = async (limit, offset) => {
     const o = tableMeta.toObject(values);
     arrResponse.push(o._value);
   }
+
+  console.log(arrResponse);
 
   return arrResponse.reverse();
 };
