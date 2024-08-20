@@ -130,13 +130,9 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   // Tính P dự báo
   let arrPForecast = [];
   for (let index = 0; index < arrPAPINextDay.length; index++) {
-    if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPINextDay[index]);
-    } else {
-      const pForecast =
-        arrPAPINextDay[index] * 0.7 + arrPActualMinus1[index] * 0.3;
-      arrPForecast.push(pForecast);
-    }
+    const pForecast =
+      arrPAPINextDay[index] * 0.7 + arrPActualMinus1[index] * 0.3;
+    arrPForecast.push(pForecast);
   }
 
   return arrPForecast.map((p) => (p > 30 ? 29 + Math.random() : p));
@@ -148,7 +144,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
 
   arrPAPINext2Day = [];
   arrWinSpeedNext2Day.map((ws) => {
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 2; index++) {
       arrPAPINext2Day.push(powerWind(2, 6, ws));
     }
   });
@@ -170,6 +166,11 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
     powerWind(2, 6, calculatorWindSpeedFrom10to100meter(ws))
   );
 
+  // Lấy dữ liệu thật trong DB
+  const arrWsActualMinus1 = await getDataYesterday(numPeriod);
+
+  const arrPActualMinus1 = arrWsActualMinus1?.map((ws) => powerWind(2, 6, ws));
+
   // Tính sai số
   let arrDeviation = [];
   for (let index = 0; index < arrPActualMinus1.length; index++) {
@@ -181,13 +182,9 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   // Tính P dự báo
   let arrPForecast = [];
   for (let index = 0; index < arrPAPINext2Day.length; index++) {
-    if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPINext2Day[index]);
-    } else {
-      const pForecast =
-        arrPAPINext2Day[index] * 0.7 + arrPActualMinus1[index] * 0.3;
-      arrPForecast.push(pForecast);
-    }
+    const pForecast =
+      arrPAPINext2Day[index] * 0.7 + arrPActualMinus1[index] * 0.3;
+    arrPForecast.push(pForecast);
   }
 
   return arrPForecast.map((p) => (p > 30 ? 29 + Math.random() : p));

@@ -28,7 +28,6 @@ const exportExcel96PeriodInNextDay = async (req, res) => {
 const exportExcelInNext2Day = async (req, res) => {
   try {
     const arrP = await exportPowerForeCastByPeriodIn2Day(48);
-
     writeExcelWithTemplate(arrP, "Dự báo trong 2 ngày tới");
   } catch (error) {
     return error;

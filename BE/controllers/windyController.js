@@ -6,10 +6,8 @@ const { writeDataWindy, writeDataWindyHistory } = require("../db/writeData");
 const getDataWindy = async (req, res) => {
   try {
     const arrData = parseStringToArray(req.body.wind_speed);
-    setTimeout(() => {
-      writeDataWindyHistory(arrData.slice(0, 10));
-    }, 1000);
-    writeDataWindy(arrData);
+    await writeDataWindy(arrData);
+    await writeDataWindyHistory(arrData.slice(0, 24));
   } catch (error) {
     return error;
   }

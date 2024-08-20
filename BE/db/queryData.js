@@ -113,8 +113,6 @@ const getRecordOfWindApiHistory = async (limit, offset) => {
     arrResponse.push(o._value);
   }
 
-  console.log(arrResponse);
-
   return arrResponse.reverse();
 };
 
@@ -142,6 +140,9 @@ const getDataPPredict = async (startDate, endDate) => {
 
 const getDataYesterday = async (numberTime) => {
   const groupPerMinute = 1440 / numberTime;
+
+  console.log(groupPerMinute);
+
   let currentTime = groupPerMinute;
   let arrResponse = new Array(numberTime).fill(null);
   let tempArr = [];
@@ -195,8 +196,6 @@ const getData2daysAgo = async (numberTime) => {
     |> group(columns: ["_time"])
     |> mean()
     `;
-
-  console.log(fluxQuery);
 
   currentTime += groupPerMinute;
   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
