@@ -50,7 +50,7 @@ onMounted(() => {
   if (localStorage.getItem('menuActive')) {
     activeMenuMounted(localStorage.getItem('menuActive'))
   } else {
-    localStorage.setItem('menuActive', '#dashboard')
+    localStorage.setItem('menuActive', '#report')
   }
 })
 

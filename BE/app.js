@@ -49,12 +49,12 @@ schedule.scheduleJob(
 schedule.scheduleJob(
   {
     hour: 0,
-    minute: 14,
+    minute: 13,
     tz: "Asia/Ho_Chi_Minh",
   },
   async function () {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
-    writePPrecipitation(arrP);
+    await writePPrecipitation(arrP);
   }
 );
 
