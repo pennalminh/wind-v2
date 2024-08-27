@@ -30,7 +30,7 @@ const getNumberTimePerday = async (numberTimeInDay) => {
   const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: ${previousDate.toISOString()}, stop: ${today.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
+    |> filter(fn: (r) => r["device"] == "SCADA-LH-WT")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
@@ -63,7 +63,7 @@ const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
   const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: ${start.toISOString()}, stop:${end.toISOString()})
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
+    |> filter(fn: (r) => r["device"] == "SCADA-LH-WT")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
@@ -157,7 +157,7 @@ const getDataYesterday = async (numberTime) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
     |> range(start: ${start.toISOString()}, stop: ${end.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
+    |> filter(fn: (r) => r["device"] == "SCADA-LH-WT")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
@@ -190,7 +190,7 @@ const getData2daysAgo = async (numberTime) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
     |> range(start: ${start.toISOString()}, stop: ${end.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
+    |> filter(fn: (r) => r["device"] == "SCADA-LH-WT")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
