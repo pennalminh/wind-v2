@@ -11,6 +11,7 @@ const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
 const { exportPowerForeCastByPeriodInDay } = require("./actions");
 const { writeExcelWithTemplate } = require("./actions/writeExcel");
+const { callAPIWindy } = require("./api/windy");
 const app = express();
 
 require("dotenv").config();
@@ -60,6 +61,8 @@ schedule.scheduleJob(
     writePPrecipitation(arrP);
   }
 );
+
+callAPIWindy();
 
 // Server
 const PORT = process.env.PORT || 3000;

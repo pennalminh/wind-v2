@@ -2,7 +2,6 @@ const { callAPIWindy } = require("../api/windy");
 const {
   calculatorWindSpeed,
   powerWind,
-  calculatorWindSpeedFrom10to100meter,
   fillArrayEnd,
 } = require("../common/fomular");
 const {
@@ -111,9 +110,7 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
     }
   });
 
-  const arrPAPIMinus1 = arrWsAPIMinus1?.map((ws) =>
-    powerWind(2, 6, calculatorWindSpeedFrom10to100meter(ws))
-  );
+  const arrPAPIMinus1 = arrWsAPIMinus1?.map((ws) => powerWind(2, 6, ws));
 
   // Tính sai số
   let arrDeviation = [];
@@ -160,9 +157,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
     }
   });
 
-  const arrPAPIMinus1 = arrWsAPIMinus1?.map((ws) =>
-    powerWind(2, 6, calculatorWindSpeedFrom10to100meter(ws))
-  );
+  const arrPAPIMinus1 = arrWsAPIMinus1?.map((ws) => powerWind(2, 6, ws));
 
   // Tính sai số
   let arrDeviation = [];
@@ -195,10 +190,7 @@ const getPowerWinToDayWindy = async () => {
   let tempArr = [];
 
   for (let index = 0; index < lastEle; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
+    const ws = response.list[index].wind.speed;
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
       tempArr.push(pw);
@@ -217,10 +209,7 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
   let tempArr = [];
 
   for (let index = startEle; index < startEle; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
+    const ws = response.list[index].wind.speed;
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
       tempArr.push(pw);
@@ -239,10 +228,7 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   let tempArr = [];
 
   for (let index = startEle + 8; index < startEle + 16; index++) {
-    const ws = calculatorWindSpeedFrom10to100meter(
-      response.list[index].wind.speed
-    );
-
+    const ws = response.list[index].wind.speed;
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 6; j++) {
       tempArr.push(pw);
