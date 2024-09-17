@@ -3,13 +3,12 @@ const {
   calculatorWindSpeed,
   powerWind,
   fillArrayEnd,
+  getIndexForTime,
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
-  getLimitRecordOfWindApi,
   getRecordOfWindApi,
   getDataYesterday,
-  getData2daysAgo,
 } = require("../db/queryData");
 
 const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
@@ -76,7 +75,7 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
         arrPForecast.push(arrPAPIPlus1[index]);
       } else {
         const pForecast =
-          arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
+          (arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
         arrPForecast.push(pForecast);
       }
     }
@@ -91,6 +90,8 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   // P API+1
   const arrPAPIPlus1 = await getPowerWindInNextDayWindy(numPeriod);
 
+  console.log(arrPAPIPlus1);
+
   // Lấy dữ liệu thật trong DB
   const arrWsActualMinus1 = await getDataYesterday(numPeriod);
 
@@ -123,21 +124,17 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   // Tính P dự báo
   let arrPForecast = [];
   for (let index = 0; index < arrPAPIPlus1.length; index++) {
-    if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPIPlus1[index]);
-    } else {
-      const pForecast =
-        arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
-      arrPForecast.push(pForecast);
-    }
+    const pForecast =
+      (arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
+    arrPForecast.push(pForecast);
   }
 
   return arrPForecast.map((p) => (p > 30 ? 29 + Math.random() : p));
 };
 
 const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
-  // P API+1
-  const arrPAPIPlus1 = await getPowerWindInNextDay2Windy(numPeriod);
+  // P API+2
+  const arrPAPIPlus2 = await getPowerWindInNextDay2Windy(numPeriod);
 
   // Lấy dữ liệu thật trong DB
   const arrWsActualMinus1 = await getDataYesterday(numPeriod);
@@ -146,7 +143,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   // Lấy dữ liệu windyAPI được lưu trong DB
   const currentHour = new Date().getHours();
   let limit = 8;
-  let offset = parseInt(currentHour / 3);
+  let offset = parseInt(currentHour / 3) + 8;
 
   const dataWindAPIMinus1 = await getRecordOfWindApi(numPeriod, limit, offset);
 
@@ -158,23 +155,18 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   });
 
   const arrPAPIMinus1 = arrWsAPIMinus1?.map((ws) => powerWind(2, 6, ws));
-
-  // Tính sai số
-  let arrDeviation = [];
-  for (let index = 0; index < arrPActualMinus1.length; index++) {
-    const deviation =
-      ((arrPActualMinus1[index] - arrPAPIMinus1[index]) / 30) * 100;
-    arrDeviation.push(Math.abs(deviation));
-  }
-
   // Tính P dự báo
   let arrPForecast = [];
-  for (let index = 0; index < arrPAPIPlus1.length; index++) {
-    if (isNaN(arrDeviation[index])) {
-      arrPForecast.push(arrPAPIPlus1[index]);
-    } else {
-      const pForecast = (arrDeviation[index] * 17) / 100;
+
+  console.log("ccc");
+
+  for (let index = 0; index < arrPAPIPlus2.length; index++) {
+    if (arrPAPIPlus2[index]) {
+      const pForecast =
+        (arrPAPIPlus2[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
       arrPForecast.push(pForecast);
+    } else {
+      arrPForecast.push(arrPActualMinus1[index]);
     }
   }
 
@@ -204,11 +196,10 @@ const getPowerWinToDayWindy = async () => {
 const getPowerWindInNextDayWindy = async (numPeriod) => {
   const response = await callAPIWindy();
   let arrPw = Array(numPeriod).fill(null);
-  const currentHour = new Date().getHours();
-  let startEle = parseInt((24 - currentHour) / 3);
   let tempArr = [];
+  let startEle = getIndexForTime(response, 0);
 
-  for (let index = startEle; index < startEle; index++) {
+  for (let index = startEle; index < startEle + 8; index++) {
     const ws = response.list[index].wind.speed;
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
@@ -222,12 +213,12 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
 
 const getPowerWindInNextDay2Windy = async (numPeriod) => {
   const response = await callAPIWindy();
-  let arrPw = Array(numPeriod).fill(null);
-  const currentHour = new Date().getHours();
-  let startEle = parseInt((24 - currentHour) / 3);
-  let tempArr = [];
 
-  for (let index = startEle + 8; index < startEle + 16; index++) {
+  let arrPw = Array(numPeriod).fill(null);
+  let tempArr = [];
+  let startEle = getIndexForTime(response, 1);
+
+  for (let index = startEle; index < startEle + 8; index++) {
     const ws = response.list[index].wind.speed;
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 6; j++) {

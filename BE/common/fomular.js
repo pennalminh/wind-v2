@@ -136,6 +136,40 @@ const fillArrayEnd = (m, elements) => {
   return m;
 };
 
+function getIndexForTime(data, offset) {
+  const currentDate = new Date(); // Lấy giờ hiện tại
+  const currentHour = currentDate.getHours() - 7; // Lấy giờ hiện tại (giờ trong ngày)
+
+  if (offset) {
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // Format ngày hiện tại và ngày hôm sau theo định dạng 'YYYY-MM-DD'
+  const today = currentDate.toISOString().split("T")[0];
+  const tomorrowDate = new Date(currentDate);
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1 + offset);
+  const tomorrow = tomorrowDate.toISOString().split("T")[0];
+
+  // Kiểm tra trong mảng nếu giờ hiện tại chưa đến 18h thì lấy 18:00:00 của hôm nay
+  if (currentHour < 17) {
+    for (let i = 0; i < data.list.length; i++) {
+      if (data.list[i].dt_txt === `${today} 18:00:00`) {
+        return i; // Trả về index phần tử của hôm nay
+      }
+    }
+  }
+
+  // Nếu giờ hiện tại đã quá 18h thì tìm 18:00:00 của ngày hôm sau
+  for (let i = 0; i < data.list.length; i++) {
+    if (data.list[i].dt_txt === `${tomorrow} 18:00:00`) {
+      return i; // Trả về index phần tử của ngày hôm sau
+    }
+  }
+
+  // Trường hợp không tìm thấy phần tử nào
+  return -1;
+}
+
 module.exports = {
   windPower3_6,
   windPower3_8,
@@ -144,4 +178,5 @@ module.exports = {
   calculatorWindSpeed,
   calculatorWindSpeedFrom10to100meter,
   fillArrayEnd,
+  getIndexForTime,
 };
