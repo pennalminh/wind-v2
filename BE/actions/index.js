@@ -4,6 +4,7 @@ const {
   powerWind,
   fillArrayEnd,
   getIndexForTime,
+  calculatorWindSpeedFrom10to100meter,
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
@@ -182,7 +183,9 @@ const getPowerWinToDayWindy = async () => {
   let tempArr = [];
 
   for (let index = 0; index < lastEle; index++) {
-    const ws = response.list[index].wind.speed;
+    const ws = calculatorWindSpeedFrom10to100meter(
+      response.list[index].wind.speed
+    );
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
       tempArr.push(pw);
@@ -200,7 +203,9 @@ const getPowerWindInNextDayWindy = async (numPeriod) => {
   let startEle = getIndexForTime(response, 0);
 
   for (let index = startEle; index < startEle + 8; index++) {
-    const ws = response.list[index].wind.speed;
+    const ws = calculatorWindSpeedFrom10to100meter(
+      response.list[index].wind.speed
+    );
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 12; j++) {
       tempArr.push(pw);
@@ -219,7 +224,9 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   let startEle = getIndexForTime(response, 1);
 
   for (let index = startEle; index < startEle + 8; index++) {
-    const ws = response.list[index].wind.speed;
+    const ws = calculatorWindSpeedFrom10to100meter(
+      response.list[index].wind.speed
+    );
     const pw = powerWind(2, 6, ws);
     for (let j = 0; j < 6; j++) {
       tempArr.push(pw);
