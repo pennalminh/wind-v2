@@ -52,12 +52,12 @@ schedule.scheduleJob(
 schedule.scheduleJob(
   {
     hour: 0,
-    minute: 1,
+    minute: 14,
     tz: "Asia/Ho_Chi_Minh",
   },
   async function () {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
-    writePPrecipitation(arrP);
+    await writePPrecipitation(arrP);
   }
 );
 

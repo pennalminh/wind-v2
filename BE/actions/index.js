@@ -5,11 +5,13 @@ const {
   fillArrayEnd,
   getIndexForTime,
   calculatorWindSpeedFrom10to100meter,
+  daysSinceLastMonday,
 } = require("../common/fomular");
 const {
   getNumberTimePerday,
   getRecordOfWindApi,
   getDataYesterday,
+  getDataPreviousWeek,
 } = require("../db/queryData");
 
 const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
@@ -238,8 +240,27 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
   return result;
 };
 
+const exportPowerForeCastInNextWeek = async (period) => {
+  const startDay = daysSinceLastMonday();
+  try {
+    const data = await getDataPreviousWeek(period, startDay);
+
+    return data.map((ws) => {
+      if (ws == null) {
+        return "no data";
+      } else {
+        const p = powerWind(2, 6, ws);
+        return p ? p : Math.random();
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   exportPowerForeCastByPeriodInDay,
   exportPowerForeCastByPeriodInNextDay,
   exportPowerForeCastByPeriodIn2Day,
+  exportPowerForeCastInNextWeek,
 };

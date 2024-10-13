@@ -31,3 +31,15 @@ export const callAPIGetForecastNext2Day = async () => {
     throw error
   }
 }
+
+export const callAPIGetForecastNextWeek = async (period) => {
+  try {
+    const response = await axios.post(`${url}/export-csv-next-week`, {
+      period: period
+    })
+    alert('Xuất thành công')
+  } catch (error) {
+    alert('Xuất không thành công, có lỗi xảy ra')
+    throw error
+  }
+}

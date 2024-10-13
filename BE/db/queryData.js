@@ -9,7 +9,9 @@ const org = process.env.ORGANIZATION_ID;
 const influxBucket = process.env.INFLUX_BUCKET;
 const influxMeasurementWindAPI = process.env.INFLUX_MEASUREMENT_WINDY_API;
 
-const influxDB = new InfluxDB({ url, token });
+const deviceName = process.env.DEVICE_NAME;
+
+const influxDB = new InfluxDB({ url, token, timeout: 60000 });
 const queryApi = influxDB.getQueryApi(org);
 
 const getNumberTimePerday = async (numberTimeInDay) => {
@@ -28,8 +30,8 @@ const getNumberTimePerday = async (numberTimeInDay) => {
   const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: ${previousDate.toISOString()}, stop: ${today.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
-    |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
+    |> filter(fn: (r) => contains(value: r["name"], set: ["WT01-WS", "WT02-WS", "WT03-WS", "WT04-WS", "WT05-WS", "WT06-WS", "WT07-WS", "WT08-WS"]))
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
     |> mean()
@@ -61,8 +63,8 @@ const getActualDataInperiod = async (numberTimeInDay, startDate, endDate) => {
   const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: ${start.toISOString()}, stop:${end.toISOString()})
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
-    |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
+    |> filter(fn: (r) => contains(value: r["name"], set: ["WT01-WS", "WT02-WS", "WT03-WS", "WT04-WS", "WT05-WS", "WT06-WS", "WT07-WS", "WT08-WS"]))
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
     |> mean()
@@ -92,6 +94,25 @@ const getLimitRecordOfWindApi = async (limit) => {
     arrResponse.push(o._value);
   }
   return arrResponse;
+};
+
+const getRecordOfWindApiHistory = async (limit, offset) => {
+  const fluxQuery = `
+   from(bucket: "${influxBucket}")
+    |> range(start: -10d)
+    |> filter(fn: (r) => r._measurement == "${influxMeasurementWindAPIHistory}")
+    |> sort(columns: ["_time"], desc: true)
+    |> limit(n: ${limit}, offset: ${offset} )
+    `;
+
+  let arrResponse = [];
+
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o._value);
+  }
+
+  return arrResponse.reverse();
 };
 
 const getRecordOfWindApi = async (numPeriod, limit, offset) => {
@@ -137,6 +158,7 @@ const getDataPPredict = async (startDate, endDate) => {
 
 const getDataYesterday = async (numberTime) => {
   const groupPerMinute = 1440 / numberTime;
+
   let currentTime = groupPerMinute;
   let arrResponse = new Array(numberTime).fill(null);
   let tempArr = [];
@@ -151,8 +173,8 @@ const getDataYesterday = async (numberTime) => {
   const fluxQuery = `
    from(bucket: "${influxBucket}")
     |> range(start: ${start.toISOString()}, stop: ${end.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
-    |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
+    |> filter(fn: (r) => contains(value: r["name"], set: ["WT01-WS", "WT02-WS", "WT03-WS", "WT04-WS", "WT05-WS", "WT06-WS", "WT07-WS", "WT08-WS"]))
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
     |> mean()
@@ -168,42 +190,61 @@ const getDataYesterday = async (numberTime) => {
   return result;
 };
 
-const getData2daysAgo = async (numberTime) => {
-  const groupPerMinute = 2880 / numberTime;
-  let currentTime = groupPerMinute;
-  let arrResponse = new Array(numberTime).fill(null);
-  let tempArr = [];
-  const start = new Date();
-  start.setDate(start.getDate() - 3);
-  start.setHours(24, 0, 0, 0);
+// const getData2daysAgo = async (numberTime) => {
+//   const groupPerMinute = 2880 / numberTime;
+//   let currentTime = groupPerMinute;
+//   let arrResponse = new Array(numberTime).fill(null);
+//   let tempArr = [];
+//   const start = new Date();
+//   start.setDate(start.getDate() - 3);
+//   start.setHours(24, 0, 0, 0);
 
-  const end = new Date();
-  end.setDate(end.getDate() - 1);
-  end.setHours(24, 0, 0, 0);
+//   const end = new Date();
+//   end.setDate(end.getDate() - 1);
+//   end.setHours(24, 0, 0, 0);
 
-  const fluxQuery = `
-   from(bucket: "${influxBucket}")
-    |> range(start: ${start.toISOString()}, stop: ${end.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-HD-WT")
-    |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
-    |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
+//   const fluxQuery = `
+//    from(bucket: "${influxBucket}")
+//     |> range(start: ${start.toISOString()}, stop: ${end.toISOString()})
+//     |> filter(fn: (r) => r["device"] == "${deviceName}")
+//     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS")
+//     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
+//     |> group(columns: ["_time"])
+//     |> mean()
+//     `;
+
+//   currentTime += groupPerMinute;
+//   for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+//     const o = tableMeta.toObject(values);
+//     tempArr.push(o._value);
+//   }
+
+//   const result = fillArrayEnd(arrResponse, tempArr);
+//   return result;
+// };
+
+const getDataPreviousWeek = async (period, startDay) => {
+  try {
+    const endDay = startDay - 7;
+    const fluxQuery = `from(bucket: "${influxBucket}")
+    |> range(start: -${startDay}d, stop: -${endDay}d)
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
+    |> filter(fn: (r) => contains(value: r["name"], set: ["WT01-WS", "WT02-WS", "WT03-WS", "WT04-WS", "WT05-WS", "WT06-WS", "WT07-WS", "WT08-WS"]))
+    |> aggregateWindow(every: ${30}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
-    |> mean()
-    `;
+    |> mean()`;
 
-  console.log(fluxQuery);
+    let arrResponse = [];
 
-  currentTime += groupPerMinute;
-  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
-    const o = tableMeta.toObject(values);
-    tempArr.push(o._value);
+    for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+      const o = tableMeta.toObject(values);
+      arrResponse.push(o._value);
+    }
+
+    return arrResponse;
+  } catch (error) {
+    throw error;
   }
-
-  const result = fillArrayEnd(arrResponse, tempArr);
-
-  console.log(result);
-
-  return result;
 };
 
 module.exports = {
@@ -213,5 +254,7 @@ module.exports = {
   getDataPPredict,
   getRecordOfWindApi,
   getDataYesterday,
-  getData2daysAgo,
+  // getData2daysAgo,
+  getRecordOfWindApiHistory,
+  getDataPreviousWeek,
 };

@@ -4,8 +4,13 @@ const {
   exportPowerForeCastByPeriodInDay,
   exportPowerForeCastByPeriodIn2Day,
   exportPowerForeCastByPeriodInNextDay,
+  exportPowerForeCastInNextWeek,
 } = require("../actions");
-const { writeExcelWithTemplate } = require("../actions/writeExcel");
+const {
+  writeExcelWithTemplate,
+  writeExcelWithTemplateWeek30m,
+  writeExcelWithTemplateWeek60m,
+} = require("../actions/writeExcel");
 
 const exportExcel96Period = async (req, res) => {
   try {
@@ -34,8 +39,22 @@ const exportExcelInNext2Day = async (req, res) => {
   }
 };
 
+const exportExcelReportNextWeek = async (req, res) => {
+  try {
+    const arrP = await exportPowerForeCastInNextWeek(req.body.period);
+    if (req.body.period == 30) {
+      writeExcelWithTemplateWeek30m(arrP, "Dự báo trong tuần chu kỳ 30 phút");
+    } else {
+      writeExcelWithTemplateWeek60m(arrP, "Dự báo trong tuần chu kỳ 60 phút");
+    }
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   exportExcel96Period,
   exportExcel96PeriodInNextDay,
   exportExcelInNext2Day,
+  exportExcelReportNextWeek,
 };

@@ -6,14 +6,16 @@
           <div class="report-item__title">{{ ++index }}. {{ item.title }}</div>
           <div class="report-item-function">
             <div class="dropdown-container" v-if="item.options">
-              <select id="resolution">
-                <option v-for="(option, index) in item.options" :key="index" value="option.value">
+              <select v-model="item.selectedOption" id="resolution">
+                {{
+                  (item.selectedOption = item.options[0].value)
+                }}
+                <option v-for="(option, index) in item.options" :key="index" :value="option.value">
                   {{ option.label }}
                 </option>
-                <!-- Add more options here as needed -->
               </select>
             </div>
-            <div class="item-fuction-btn" @click="item.action()">
+            <div class="item-fuction-btn" @click="item.action(item.selectedOption)">
               <img :src="IconExcel" alt="" />
               <span>Xuất Excel</span>
             </div>
@@ -29,6 +31,7 @@ import IconExcel from './../../assets/icons/24px/xls.png'
 import {
   callAPIGetForecastNext2Day,
   callAPIGetForecastNextDay,
+  callAPIGetForecastNextWeek,
   callAPIGetForecastToDay
 } from './../../api/report'
 
@@ -56,6 +59,14 @@ const exportExcelForecastNext2Day = async () => {
   }
 }
 
+const exportExcelForecastNextWeek = async (period) => {
+  try {
+    const response = await callAPIGetForecastNextWeek(period)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const items = [
   {
     title: 'Dự báo công suất trong ngày vận hành',
@@ -74,10 +85,10 @@ const items = [
   },
   {
     title: 'Dự báo công suất và sản lượng tuần tới',
-    action: null,
+    action: exportExcelForecastNextWeek,
     options: [
-      { label: '15 phút', value: '15m' },
-      { label: '30 phút', value: '30m' }
+      { label: '30 phút', value: '30' },
+      { label: '60 phút', value: '60' }
     ]
   },
   { title: 'Dự báo tháng tới', action: null },

@@ -169,6 +169,24 @@ function getIndexForTime(data, offset) {
   // Trường hợp không tìm thấy phần tử nào
   return -1;
 }
+function daysSinceLastMonday() {
+  // Lấy thời điểm hiện tại
+  const now = new Date();
+
+  // Tính toán thứ hiện tại (0 là Chủ Nhật, 1 là Thứ Hai, ..., 6 là Thứ Bảy)
+  const currentDayOfWeek = now.getDay() - 2;
+
+  // Tính thứ Hai của tuần trước
+  const daysToLastMonday = ((currentDayOfWeek + 6) % 7) + 7; // Lùi về thứ 2 tuần trước
+  const lastMonday = new Date(now);
+  lastMonday.setDate(now.getDate() - daysToLastMonday);
+
+  // Tính số ngày từ hiện tại đến thứ 2 tuần trước
+  const timeDiff = now - lastMonday; // Chênh lệch thời gian tính bằng milliseconds
+  const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Đổi milliseconds sang số ngày
+
+  return daysDiff;
+}
 
 module.exports = {
   windPower3_6,
@@ -179,4 +197,5 @@ module.exports = {
   calculatorWindSpeedFrom10to100meter,
   fillArrayEnd,
   getIndexForTime,
+  daysSinceLastMonday,
 };

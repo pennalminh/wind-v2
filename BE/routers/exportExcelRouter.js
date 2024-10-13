@@ -3,6 +3,7 @@ const {
   exportExcel96Period,
   exportExcel96PeriodInNextDay,
   exportExcelInNext2Day,
+  exportExcelReportNextWeek,
 } = require("../controllers/exportExcelController");
 const { Router } = require("express");
 
@@ -29,6 +30,15 @@ router.post("/export-csv-in-next-day", async function (req, res) {
 router.post("/export-csv-in-next-2-day", async function (req, res) {
   try {
     exportExcelInNext2Day(req, res);
+  } catch (error) {
+    console.log(error);
+  }
+  res.status(200).json("oke");
+});
+
+router.post("/export-csv-next-week", async function (req, res) {
+  try {
+    exportExcelReportNextWeek(req, res);
   } catch (error) {
     console.log(error);
   }
