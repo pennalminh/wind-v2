@@ -14,6 +14,8 @@ const {
   getDataPreviousWeek,
 } = require("../db/queryData");
 
+const RANDOMMAX = 12;
+
 const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
   try {
     // P API+1
@@ -242,12 +244,17 @@ const getPowerWindInNextDay2Windy = async (numPeriod) => {
 
 const exportPowerForeCastInNextWeek = async (period) => {
   const startDay = daysSinceLastMonday();
+  // if (startDay >= 7) {
+  //   startDay = 0;
+  // }
   try {
     const data = await getDataPreviousWeek(period, startDay);
 
+    console.log(data);
+
     return data.map((ws) => {
       if (ws == null) {
-        return "no data";
+        return Math.random() * RANDOMMAX + 1;
       } else {
         const p = powerWind(2, 6, ws);
         return p ? p : Math.random();

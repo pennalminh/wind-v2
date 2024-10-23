@@ -1,4 +1,4 @@
-const { InfluxDB, Point } = require("@influxdata/influxdb-client");
+const { InfluxDB } = require("@influxdata/influxdb-client");
 const { fillArrayEnd } = require("../common/fomular");
 require("dotenv").config();
 
@@ -225,6 +225,8 @@ const getDataYesterday = async (numberTime) => {
 
 const getDataPreviousWeek = async (period, startDay) => {
   try {
+    console.log(startDay);
+
     const endDay = startDay - 7;
     const fluxQuery = `from(bucket: "${influxBucket}")
     |> range(start: -${startDay}d, stop: -${endDay}d)
