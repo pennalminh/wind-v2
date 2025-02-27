@@ -80,7 +80,7 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
         arrPForecast.push(arrPAPIPlus1[index]);
       } else {
         const pForecast =
-          (arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
+          arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
         arrPForecast.push(pForecast);
       }
     }
@@ -129,8 +129,7 @@ const exportPowerForeCastByPeriodInNextDay = async (numPeriod) => {
   // Tính P dự báo
   let arrPForecast = [];
   for (let index = 0; index < arrPAPIPlus1.length; index++) {
-    const pForecast =
-      (arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
+    const pForecast = arrPAPIPlus1[index] * 0.7 + arrPActualMinus1[index] * 0.3;
     arrPForecast.push(pForecast);
   }
 
@@ -168,7 +167,7 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   for (let index = 0; index < arrPAPIPlus2.length; index++) {
     if (arrPAPIPlus2[index]) {
       const pForecast =
-        (arrPAPIPlus2[index] * 0.7 + arrPActualMinus1[index] * 0.3) / 2;
+        arrPAPIPlus2[index] * 0.7 + arrPActualMinus1[index] * 0.3;
       arrPForecast.push(pForecast);
     } else {
       arrPForecast.push(arrPActualMinus1[index]);
