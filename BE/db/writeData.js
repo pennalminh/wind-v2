@@ -65,7 +65,33 @@ const writePPrecipitation = async (arrData) => {
   });
 };
 
+const writeDataWindy = async (arrWindspeed) => {
+  const writeApi = influxDB.getWriteApi(org, bucket);
+
+  const writePromises = arrWindspeed?.map(async (data) => {
+    let windSpeed = calculatorWindSpeedFrom10to100meter(data);
+    const point = new Point(influxMeasurementWindAPI).floatField(
+      "value",
+      windSpeed
+    );
+
+    writeApi.writePoint(point);
+  });
+
+  await Promise.all(writePromises);
+  await writeApi.flush();
+
+  console.log("WRITE FINISHED");
+
+  process.on("exit", () => {
+    writeApi.close().then(() => {
+      console.log("Ok");
+    });
+  });
+};
+
 module.exports = {
   writeDataWindyEvery3h,
   writePPrecipitation,
+  writeDataWindy,
 };

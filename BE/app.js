@@ -48,19 +48,6 @@ schedule.scheduleJob(
   }
 );
 
-// Ghi lại dữ liệu dự đoán vào 00h
-schedule.scheduleJob(
-  {
-    hour: 0,
-    minute: 14,
-    tz: "Asia/Ho_Chi_Minh",
-  },
-  async function () {
-    const arrP = await exportPowerForeCastByPeriodInDay(96);
-    await writePPrecipitation(arrP);
-  }
-);
-
 // Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
