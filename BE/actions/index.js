@@ -25,7 +25,7 @@ const exportPowerForeCastByPeriodInDay = async (numPeriod) => {
 
     // Lấy dữ liệu thật trong DB
     const arrWsActualMinus1 = await getNumberTimePerday(numPeriod);
-
+    
     const arrPActualMinus1 = arrWsActualMinus1?.map((ws) =>
       ws == null ? null : powerWind(2, 6, ws)
     );

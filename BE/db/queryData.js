@@ -10,6 +10,7 @@ const influxBucket = process.env.INFLUX_BUCKET;
 const influxMeasurementWindAPI = process.env.INFLUX_MEASUREMENT_WINDY_API;
 const influxMeasurementWindAPIHistory =
   process.env.INFLUX_MEASUREMENT_WINDY_API_HISTORY;
+const deviceName = process.env.DEVICE_NAME;
 
 const influxDB = new InfluxDB({ url, token });
 const queryApi = influxDB.getQueryApi(org);
@@ -30,7 +31,7 @@ const getNumberTimePerday = async (numberTimeInDay) => {
   const fluxQuery = `
     from(bucket: "${influxBucket}")
     |> range(start: ${previousDate.toISOString()}, stop: ${today.toISOString()}) 
-    |> filter(fn: (r) => r["device"] == "SCADA-LH-WT")
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
     |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
     |> aggregateWindow(every: ${groupPerMinute}m, fn: mean, createEmpty: true)
     |> group(columns: ["_time"])
