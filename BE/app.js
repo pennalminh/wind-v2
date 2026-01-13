@@ -33,17 +33,17 @@ app.use("/api", dataExportRouter);
 app.use("/api", windyRouter);
 
 // Xuất CSV tự động vào 9h hằng ngày
-// schedule.scheduleJob(
-//   {
-//     hour: 9,
-//     minute: 0,
-//     tz: "Asia/Ho_Chi_Minh",
-//   },
-//   async function () {
-//     const arrP = await exportPowerForeCastByPeriodInDay(96);
-//     writeExcelWithTemplate(arrP, "Dự báo trong ngày");
-//   }
-// );
+schedule.scheduleJob(
+  {
+    hour: 9,
+    minute: 0,
+    tz: "Asia/Ho_Chi_Minh",
+  },
+  async function () {
+    const arrP = await exportPowerForeCastByPeriodInDay(96);
+    writeExcelWithTemplate(arrP, "Dự báo trong ngày");
+  }
+);
 
 // Ghi lại dữ liệu dự đoán vào 00h
 // schedule.scheduleJob(
