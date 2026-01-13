@@ -31,10 +31,13 @@ import {
   callAPIGetForecastNextDay,
   callAPIGetForecastToDay
 } from './../../api/report'
+import { exportExcelService } from './../../../services/exportExcelService'
 
 const exportExcelForecastToDay = async () => {
   try {
     const response = await callAPIGetForecastToDay()
+    console.log(response);
+    exportExcelService.buildCsvContent(response.data, 'Dự báo công suất trong ngày vận hành')
   } catch (error) {
     console.log(error)
   }
@@ -43,6 +46,7 @@ const exportExcelForecastToDay = async () => {
 const exportExcelForecastNextDay = async () => {
   try {
     const response = await callAPIGetForecastNextDay()
+    exportExcelService.buildCsvContent(response.data, 'Dự báo công suất phát trong ngày tới')
   } catch (error) {
     console.log(error)
   }
@@ -51,6 +55,7 @@ const exportExcelForecastNextDay = async () => {
 const exportExcelForecastNext2Day = async () => {
   try {
     const response = await callAPIGetForecastNext2Day()
+    exportExcelService.buildCsvContent(response.data, 'Dự báo công suất phát ngày kia')
   } catch (error) {
     console.log(error)
   }

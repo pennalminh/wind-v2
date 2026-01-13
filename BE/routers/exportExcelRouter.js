@@ -10,29 +10,33 @@ const router = Router();
 
 router.post("/export-csv-in-day", async function (req, res) {
   try {
-    exportExcel96Period(req, res);
+    const response = await exportExcel96Period(req, res);
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
+    res.status(500).json("error");
   }
-  res.status(200).json("oke");
 });
 
 router.post("/export-csv-in-next-day", async function (req, res) {
   try {
-    exportExcel96PeriodInNextDay(req, res);
+    const response = await exportExcel96PeriodInNextDay(req, res);
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
+    res.status(500).json("error");
   }
-  res.status(200).json("oke");
+  
 });
 
 router.post("/export-csv-in-next-2-day", async function (req, res) {
   try {
-    exportExcelInNext2Day(req, res);
+    const response = await exportExcelInNext2Day(req, res);
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
+    res.status(500).json("error");
   }
-  res.status(200).json("oke");
 });
 
 module.exports = router;

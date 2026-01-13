@@ -10,7 +10,8 @@ const { writeExcelWithTemplate } = require("../actions/writeExcel");
 const exportExcel96Period = async (req, res) => {
   try {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
-    writeExcelWithTemplate(arrP, "Dự báo trong ngày");
+    // writeExcelWithTemplate(arrP, "Dự báo trong ngày");
+    return arrP;
   } catch (error) {
     return error;
   }
@@ -19,7 +20,8 @@ const exportExcel96Period = async (req, res) => {
 const exportExcel96PeriodInNextDay = async (req, res) => {
   try {
     const arrP = await exportPowerForeCastByPeriodInNextDay(96);
-    writeExcelWithTemplate(arrP, "Dự báo trong ngày tới");
+    // writeExcelWithTemplate(arrP, "Dự báo trong ngày tới");
+    return arrP;
   } catch (error) {
     return error;
   }
@@ -28,7 +30,8 @@ const exportExcel96PeriodInNextDay = async (req, res) => {
 const exportExcelInNext2Day = async (req, res) => {
   try {
     const arrP = await exportPowerForeCastByPeriodIn2Day(48);
-    writeExcelWithTemplate(arrP, "Dự báo trong 2 ngày tới");
+    // writeExcelWithTemplate(arrP, "Dự báo trong 2 ngày tới");
+    return arrP;
   } catch (error) {
     return error;
   }
