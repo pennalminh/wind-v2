@@ -1,5 +1,5 @@
+const path = require("path");
 const {
-  calculatorWindSpeed,
   powerWind,
   calculatorWindSpeedFrom10to100meter,
   fillArrayEnd,
@@ -190,8 +190,21 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
   return arrPForecast.map((p) => (p > 30 ? 29 + Math.random() : p));
 };
 
+const exportMonthlyReport = async () => {
+  try {
+    const currentMonth = new Date().getMonth() + 1; 
+    const filePath = path.join(process.cwd(),  "monthly_report", `${currentMonth}.xlsx`);
+    const fileName = `Bao_cao_thang_${currentMonth}.xlsx`;
+    return { filePath, fileName };
+  } catch (error) {
+    console.error("Error generating monthly report:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   exportPowerForeCastByPeriodInDay,
   exportPowerForeCastByPeriodInNextDay,
   exportPowerForeCastByPeriodIn2Day,
+  exportMonthlyReport,
 };

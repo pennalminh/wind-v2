@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
 const windyRouter = require("./routers/windyRouter");
+const monthlyReportRouter = require("./routers/monthlyReportRouter");
 const schedule = require("node-schedule");
 const allowCrossDomain = require("./middlewares/allowCrossDomain");
 const { exportPowerForeCastByPeriodInDay } = require("./actions");
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 app.use("/api", exportExcelRouter);
 app.use("/api", dataExportRouter);
 app.use("/api", windyRouter);
+app.use("/api", monthlyReportRouter);
 
 // Xuất CSV tự động vào 9h hằng ngày
 schedule.scheduleJob(

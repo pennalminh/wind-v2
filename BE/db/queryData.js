@@ -208,6 +208,43 @@ const getData2daysAgo = async (numberTime) => {
   return result;
 };
 
+const queryInfluxForWeekly30MinData = async () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+
+  // Calculate the start of the current week (Monday)
+  const currentWeekStart = new Date(now);
+  currentWeekStart.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  currentWeekStart.setHours(0, 0, 0, 0);
+
+  // Calculate the start of the previous week (Monday)
+  const lastWeekStart = new Date(currentWeekStart);
+  lastWeekStart.setDate(currentWeekStart.getDate() - 7);
+  lastWeekStart.setHours(lastWeekStart.getHours() - 7); // Adjust for UTC+7
+
+  // Calculate the end of the previous week (Sunday)
+  const lastWeekEnd = new Date(currentWeekStart);
+  lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1); // Set to 23:59:59.999 Sunday
+  lastWeekEnd.setHours(lastWeekEnd.getHours() - 7); // Adjust for UTC+7
+
+  const fluxQuery = `
+    from(bucket: "${influxBucket}")
+    |> range(start: ${lastWeekStart.toISOString()}, stop: ${lastWeekEnd.toISOString()})
+    |> filter(fn: (r) => r["device"] == "${deviceName}")
+    |> filter(fn: (r) => r["name"] == "WT01-WS" or r["name"] == "WT02-WS" or r["name"] == "WT03-WS" or r["name"] == "WT04-WS" or r["name"] == "WT05-WS" or r["name"] == "WT06-WS" or r["name"] == "WT07-WS" or r["name"] == "WT08-WS") 
+    |> aggregateWindow(every: 30m, fn: mean, createEmpty: true)
+    |> group(columns: ["_time"])
+    |> mean()
+  `;
+
+  let arrResponse = [];
+  for await (const { values, tableMeta } of queryApi.iterateRows(fluxQuery)) {
+    const o = tableMeta.toObject(values);
+    arrResponse.push(o);
+  }
+  return arrResponse;
+};
+
 module.exports = {
   getNumberTimePerday,
   getActualDataInperiod,
@@ -216,4 +253,5 @@ module.exports = {
   getDataYesterday,
   getData2daysAgo,
   getRecordOfWindApiHistory,
+  queryInfluxForWeekly30MinData,
 };

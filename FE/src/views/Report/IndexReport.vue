@@ -29,9 +29,12 @@ import IconExcel from './../../assets/icons/24px/xls.png'
 import {
   callAPIGetForecastNext2Day,
   callAPIGetForecastNextDay,
-  callAPIGetForecastToDay
+  callAPIGetForecastToDay,
+  callAPIGetForecastNextMonth,
+  callAPIGetForecastNextWeek
 } from './../../api/report'
 import { exportExcelService } from './../../../services/exportExcelService'
+import { getCurrentWeekAndYear } from './../../utils/dateUtils'
 
 const exportExcelForecastToDay = async () => {
   try {
@@ -61,6 +64,38 @@ const exportExcelForecastNext2Day = async () => {
   }
 }
 
+const exportExcelForecastNextMonth = async () => {
+  try {
+    const response = await callAPIGetForecastNextMonth()
+    const blob = new Blob([response.data], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', `Dự báo tháng tới-${new Date().getTime()}.xlsx`);
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const exportExcelForecastNextWeek = async () => {
+  try {
+    const response = await callAPIGetForecastNextWeek()
+    const { weekNumber, year } = getCurrentWeekAndYear();
+    exportExcelService.buildWeeklyPowerCsvContent({ dailyData: response.data, weekNumber, year }, 'Dự báo công suất phát tuần tới')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const items = [
   {
     title: 'Dự báo công suất trong ngày vận hành',
@@ -79,13 +114,12 @@ const items = [
   },
   {
     title: 'Dự báo công suất và sản lượng tuần tới',
-    action: null,
+    action: exportExcelForecastNextWeek,
     options: [
-      { label: '15 phút', value: '15m' },
       { label: '30 phút', value: '30m' }
     ]
   },
-  { title: 'Dự báo tháng tới', action: null },
+  { title: 'Dự báo tháng tới', action: exportExcelForecastNextMonth },
   { title: 'Dự báo năm tới', action: null },
   { title: 'Dự báo theo chọn ngày', action: null },
   { title: 'Xuất dữ liệu theo lịch sử công suất tổng thực tế', action: null }

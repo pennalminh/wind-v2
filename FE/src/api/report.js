@@ -31,3 +31,28 @@ export const callAPIGetForecastNext2Day = async () => {
     throw error
   }
 }
+
+export const callAPIGetForecastNextMonth = async () => {
+  try {
+    const response = await axios.get(`${url}/monthly-report`, {
+      responseType: 'blob'
+    })
+    console.log(response);
+    
+    return response
+  } catch (error) {
+    alert('Xuất không thành công, có lỗi xảy ra')
+    throw error
+  }
+}
+
+export const callAPIGetForecastNextWeek = async () => {
+  try {
+    const response = await axios.get(`${url}/export-csv-in-next-week`)
+
+    return response
+  } catch (error) {
+    alert('Xuất không thành công, có lỗi xảy ra')
+    throw error
+  }
+}
