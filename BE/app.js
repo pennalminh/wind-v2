@@ -1,6 +1,5 @@
 const express = require("express");
 const path = require("path");
-const { writePPrecipitation } = require("./db/writeData");
 const bodyParser = require("body-parser");
 const exportExcelRouter = require("./routers/exportExcelRouter");
 const dataExportRouter = require("./routers/dataExportRouter");
@@ -44,7 +43,7 @@ schedule.scheduleJob(
   async function () {
     const arrP = await exportPowerForeCastByPeriodInDay(96);
     writeExcelWithTemplate(arrP, "Dự báo trong ngày");
-  }
+  },
 );
 
 // Ghi lại dữ liệu dự đoán vào 00h
@@ -62,6 +61,17 @@ schedule.scheduleJob(
 
 // Server
 const PORT = process.env.PORT || 3000;
+const os = require("os");
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  const networkInterfaces = os.networkInterfaces();
+  for (const interfaceName in networkInterfaces) {
+    const networkInterface = networkInterfaces[interfaceName];
+    for (const iface of networkInterface) {
+      if (iface.family === "IPv4" && !iface.internal) {
+        console.log(`Accessible at: http://${iface.address}:${PORT}`);
+      }
+    }
+  }
 });
