@@ -192,7 +192,8 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
 
 const exportMonthlyReport = async () => {
   try {
-    const nextMonth = new Date().getMonth() + 2; 
+    const currentMonth = new Date().getMonth();
+    const nextMonth = ((currentMonth + 1) % 12) + 1 ;
     const filePath = path.join(process.cwd(),  "monthly_report", `${nextMonth}.xlsx`);
     const fileName = `Bao_cao_thang_${nextMonth}.xlsx`;
     return { filePath, fileName };
