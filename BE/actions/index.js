@@ -192,9 +192,9 @@ const exportPowerForeCastByPeriodIn2Day = async (numPeriod) => {
 
 const exportMonthlyReport = async () => {
   try {
-    const currentMonth = new Date().getMonth() + 1; 
-    const filePath = path.join(process.cwd(),  "monthly_report", `${currentMonth}.xlsx`);
-    const fileName = `Bao_cao_thang_${currentMonth}.xlsx`;
+    const nextMonth = new Date().getMonth() + 2; 
+    const filePath = path.join(process.cwd(),  "monthly_report", `${nextMonth}.xlsx`);
+    const fileName = `Bao_cao_thang_${nextMonth}.xlsx`;
     return { filePath, fileName };
   } catch (error) {
     console.error("Error generating monthly report:", error);
